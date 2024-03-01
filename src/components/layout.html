@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>HTMX Example</title>
+    <script src="https://unpkg.com/htmx.org"></script>
+    <meta http-equiv="refresh" content="3">
+    <link rel="stylesheet" href="styles/global.css">
+    <link rel="stylesheet" href="styles/main.css">
+  </head>
+  <body>
+    <header 
+      class="py-3 px-4 mx-auto items-center flex justify-between h-fit bg-primary font-Lilita shadow-xl border-2 border-black"
+    >
+      <h1 class="text-5xl">
+        One Day One Question
+      </h1>
+    </header>
+    <main>
+      {{ template "main" . }}
+    </main>
+  </body>
+</html>
