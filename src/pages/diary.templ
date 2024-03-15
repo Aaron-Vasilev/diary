@@ -1,10 +1,16 @@
 package pages
 
 import "github.com/aaron-vasilev/diary-templ/src/components"
+import "github.com/aaron-vasilev/diary-templ/src/model"
 
-templ Diary(shownDate string) {
+type DiaryProps struct {
+  User model.User
+}
+
+templ Diary(props DiaryProps) {
   @components.Layout() {
-    <h1>{ shownDate }</h1>
+    <a href="http://localhost:3000/auth/login?provider=google">REGISTER</a>
+    <h1>{ props.User.Email }</h1>
     @components.CreateNote()
   }
 }

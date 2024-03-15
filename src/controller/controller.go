@@ -39,6 +39,25 @@ func GetUserById(db *sql.DB, id int) model.User {
   return u
 }
 
+func GetUserByEmail(db *sql.DB, email string) model.User {
+  var u model.User
+  query := `SELECT * FROM diary.user u WHERE u.id=$1;`
+  row := db.QueryRow(query, email).Scan(
+    &u.Id,
+    &u.CreatedAt,
+    &u.Email,
+    &u.Name,
+    &u.Role,
+    &u.SubId,
+    &u.Subscribed)
+
+  if row == sql.ErrNoRows {
+    fmt.Println("No question with that id")
+  }
+
+  return u
+}
+
 func GetQuestions(db *sql.DB) ([]model.Question, error) {
   var questions []model.Question
   query := `SELECT * FROM diary.question ORDER BY shown_date ASC;`
