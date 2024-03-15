@@ -1,0 +1,7 @@
+package components
+
+templ CreateNote() {
+  @InputArea()
+  <button hx-post="/post" hx-target="#update" hx-swap="innerHTML" type="button">Click</button>
+  <div id="update"><h1>Outer</h1></div>
+}

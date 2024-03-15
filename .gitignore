@@ -1,1 +1,6 @@
 .env
+*_templ.go
+tmp
+port
+src/styles/out.css
+

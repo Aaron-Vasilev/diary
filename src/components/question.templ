@@ -1,0 +1,17 @@
+package components
+
+import "github.com/aaron-vasilev/diary-templ/src/model"
+import "strconv"
+
+func intToStr(i int) string {
+  return strconv.Itoa(i)
+}
+
+templ Question(q model.Question, u model.User) {
+  <div className="md:row-start-1">
+    <h3 className="text-xl underline underline-offset-4">
+      #{intToStr(q.Id)} {u.Name}&apos;s daily question
+    </h3>
+    <h2 className="pl-4 text-2xl">{q.Text}</h2>
+  </div>
+}

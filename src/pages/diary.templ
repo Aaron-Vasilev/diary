@@ -1,0 +1,10 @@
+package pages
+
+import "github.com/aaron-vasilev/diary-templ/src/components"
+
+templ Diary(shownDate string) {
+  @components.Layout() {
+    <h1>{ shownDate }</h1>
+    @components.CreateNote()
+  }
+}

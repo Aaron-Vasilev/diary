@@ -1,0 +1,15 @@
+.question {
+  grid-row-start: 1;
+  & h3 {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+}
+
+.diary {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0,1fr));
+  gap: 1rem;
+}
