@@ -5,12 +5,19 @@ import "github.com/aaron-vasilev/diary-templ/src/model"
 
 type DiaryProps struct {
   User model.User
+  Question model.Question
+  Notes []model.Note
 }
 
 templ Diary(props DiaryProps) {
   @components.Layout() {
-    <a href="http://localhost:3000/auth/login?provider=google">REGISTER</a>
-    <h1>{ props.User.Email }</h1>
-    @components.CreateNote()
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 gap-4"
+    >
+      @components.Calendar(props.Question.ShownDate)
+      @components.Question(props.Question, props.User)
+      @components.NoteList(props.Notes)
+      @components.CreateNote()
+    </div>
   }
 }

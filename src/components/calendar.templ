@@ -1,0 +1,26 @@
+package components
+
+templ Calendar(date string) {
+  <style type="text/css">
+    input[type="date"] {
+      color: white;
+      padding: 0.5rem 0.5rem;
+    }
+
+    input[type="date"] :focus{
+      outline-style: dashed;
+      outline-width: 3px;
+    }
+
+    input[type="date"] ::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      width: 2.6rem;
+      height: 2.6rem;
+    }
+  </style>
+  <input 
+    class="justify-self-start bg-secondary border-2 border-black shadow-xl font-Lilita text-3xl outline-primary md:justify-self-end md:col-start-2"
+    type="date"
+    value={ date } 
+  />
+}

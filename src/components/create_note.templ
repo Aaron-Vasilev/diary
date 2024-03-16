@@ -1,7 +1,14 @@
 package components
 
 templ CreateNote() {
-  @InputArea()
-  <button hx-post="/post" hx-target="#update" hx-swap="innerHTML" type="button">Click</button>
-  <div id="update"><h1>Outer</h1></div>
+  <form 
+    class="col-[1_/_-1] grid items-center gap-4"
+    id="create-note"
+    hx-post="/note"
+    hx-target="#note-list"
+    hx-swap="beforeend"
+  >
+    @InputArea()
+    @Button("Add", M, PRIMARY)
+  </form>
 }

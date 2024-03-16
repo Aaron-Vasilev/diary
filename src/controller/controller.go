@@ -17,6 +17,8 @@ func GetQuestionByDate(db *sql.DB, date string) model.Question {
     fmt.Println("No question with that date")
   }
 
+  q.ShownDate = strings.Split(q.ShownDate, "T")[0]
+
   return q
 }
 
@@ -41,7 +43,7 @@ func GetUserById(db *sql.DB, id int) model.User {
 
 func GetUserByEmail(db *sql.DB, email string) model.User {
   var u model.User
-  query := `SELECT * FROM diary.user u WHERE u.id=$1;`
+  query := `SELECT * FROM diary.user u WHERE u.email=$1;`
   row := db.QueryRow(query, email).Scan(
     &u.Id,
     &u.CreatedAt,
@@ -52,44 +54,54 @@ func GetUserByEmail(db *sql.DB, email string) model.User {
     &u.Subscribed)
 
   if row == sql.ErrNoRows {
-    fmt.Println("No question with that id")
+    fmt.Println("No question with that email")
   }
 
   return u
 }
 
-func GetQuestions(db *sql.DB) ([]model.Question, error) {
+func GetQuestions(db *sql.DB) []model.Question {
   var questions []model.Question
   query := `SELECT * FROM diary.question ORDER BY shown_date ASC;`
 
   rows, err := db.Query(query)
 
-  if err != nil {
-    return nil, err
+  if err == nil {
+    for rows.Next() {
+      var q model.Question
+      var dateString string
+
+      rows.Scan(&q.Id, &q.Text, &dateString)
+
+      dateWithoutTime := strings.Split(dateString, "T")
+      q.ShownDate = dateWithoutTime[0]
+
+      questions = append(questions, q)
+    }
   }
   defer rows.Close()
 
-  for rows.Next() {
-    var q model.Question
-    var dateString string
+  return questions
+}
 
-    rows.Scan(&q.Id, &q.Text, &dateString)
+func GetNotes(db *sql.DB, userId, questionId int) []model.Note {
+  var notes []model.Note
+  query := `SELECT * FROM diary.note WHERE user_id=$1 AND question_id=$2;`
 
-    dateWithoutTime := strings.Split(dateString, "T")
-    q.ShownDate = dateWithoutTime[0]
+  rows, err := db.Query(query, userId, questionId)
 
-    questions = append(questions, q)
+  if err == nil {
+    for rows.Next() {
+      var n model.Note
+
+      rows.Scan(&n.Id, &n.UserId, &n.Text, &n.CreatedDate, &n.QuestionId)
+
+      n.CreatedDate = strings.Split(n.CreatedDate, "T")[0]
+
+      notes = append(notes, n)
+    }
   }
+  defer rows.Close()
 
-  return questions, nil
-}
-
-type diaryPageData struct {
-
-}
-
-func FetchDataForDiaryPage(db *sql.DB) {
-//   query := `SELECT * FROM diary.question q LEFT JOIN diary.note n 
-//   ON q.id = n.question_id WHERE q.shown_date=$1 AND n.user_id=$2;`
-//   rows, err := db.Query(query, "2024-03-09", 1)
+  return notes
 }

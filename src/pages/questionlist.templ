@@ -14,13 +14,13 @@ templ QuestionList(questions []model.Question) {
 }
 
 templ question(q model.Question) {
-  <li className="pl-4 text-2xl">
-     <h2 className="text-lg underline decoration-dashed underline-offset-4">
-       <span className="mr-1 text-2xl">
+  <li class="pl-4 text-2xl">
+     <h2 class="text-lg underline decoration-dashed underline-offset-4">
+       <span class="mr-1 text-2xl">
          Date: 
        </span>
        {q.ShownDate}
      </h2>
-    <h2 className="pl-4 text-2xl">{q.Text}</h2>
+    <h2 class="pl-4 text-2xl">{q.Text}</h2>
   </li>
 }

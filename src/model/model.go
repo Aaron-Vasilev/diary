@@ -1,11 +1,18 @@
 package model
 
+type Role string
+
+const (
+  UserRole  Role = "user"
+  AdminRole Role = "admin"
+)
+
 type User struct {
   Id int
   CreatedAt string
   Email string
   Name string
-  Role string
+  Role Role
   SubId string
   Subscribed bool
 }

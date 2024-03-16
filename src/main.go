@@ -8,8 +8,10 @@ import (
 	"database/sql"
 
 	"github.com/aaron-vasilev/diary-templ/src/auth"
-	"github.com/aaron-vasilev/diary-templ/src/handler"
+	"github.com/aaron-vasilev/diary-templ/src/router"
+	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"
+	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	_ "github.com/lib/pq"
 )
@@ -26,35 +28,17 @@ func main() {
   defer db.Close()
 
   auth.NewAuth()
+  app.Use(session.Middleware(sessions.NewCookieStore([]byte("secret"))))
 
-  app.GET("/question-list", handler.HandlerCtx{
-    Db: db,
-  }.QuestionListHandler)
-
-  app.GET("/diary", handler.HandlerCtx{
-    Db: db,
-  }.Diary)
-
-  app.POST("/post", func(c echo.Context) error {
-    return c.HTML(200, "<h1>POST</h1>")
-  })
-
-  app.GET("/auth/login", handler.HandlerCtx{ Db: db }.Login)
-
-  app.GET("/auth/callback", handler.HandlerCtx{ Db: db }.AuthCallback)
+  router.Connect(app, db)
 
   app.Static("src/styles", "src/styles")
+  app.Static("public/", "public/")
   fmt.Printf("Server started at localhost%s\n", PORT)
 
   err = app.Start(PORT)
 
-  fmt.Println("† line 33 err", err)
-}
-
-func withUser(next echo.HandlerFunc) echo.HandlerFunc {
-  return func(c echo.Context) error {
-    return next(c)
-  }
+  log.Fatal("† line 33 err", err)
 }
 
 func loadEnv() {
