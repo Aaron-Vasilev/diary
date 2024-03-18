@@ -6,9 +6,11 @@ import (
 	"time"
 
 	"github.com/aaron-vasilev/diary-templ/src/auth"
+	"github.com/aaron-vasilev/diary-templ/src/components"
 	"github.com/aaron-vasilev/diary-templ/src/controller"
 	"github.com/aaron-vasilev/diary-templ/src/model"
 	"github.com/aaron-vasilev/diary-templ/src/pages"
+	"github.com/aaron-vasilev/diary-templ/src/utils"
 	"github.com/labstack/echo/v4"
 	"github.com/markbates/goth/gothic"
 )
@@ -45,7 +47,7 @@ func (h HandlerCtx) Diary(c echo.Context) error {
     userClaim, err := auth.DecodeJWT(token)
     
     if err != nil {
-      deleteCookie(c, TOKEN)
+      utils.DeleteCookie(c, TOKEN)
     } else {
       user = controller.GetUserByEmail(h.Db, userClaim.Email)
       question = controller.GetQuestionByDate(h.Db, question.ShownDate)
@@ -58,7 +60,7 @@ func (h HandlerCtx) Diary(c echo.Context) error {
     user.Role = "user"
   }
 
-  return pages.Diary(pages.DiaryProps{
+  return pages.Diary(components.DiaryProps{
     User: user,
     Question: question,
     Notes: notes,
@@ -110,18 +112,4 @@ func (h HandlerCtx) AuthCallback(c echo.Context) error {
   c.SetCookie(cookie)
 
   return c.Redirect(http.StatusFound, "/diary")
-}
-
-// func ValidateDateString(dateStr string) bool {
-//     layout := "2006-01-02" // Reference layout for "YYYY-MM-DD"
-//     _, err := time.Parse(layout, dateStr)
-//     return err == nil // If there's no error, the format is correct
-// }
-
-func deleteCookie(c echo.Context, tokenName string) {
-  cookie := new(http.Cookie)
-  cookie.Name = tokenName
-  cookie.Expires = time.Unix(0, 0)
-  cookie.Path = "/"
-  c.SetCookie(cookie)
 }

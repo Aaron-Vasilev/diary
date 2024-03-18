@@ -6,18 +6,26 @@ import (
 	"strings"
 
 	"github.com/aaron-vasilev/diary-templ/src/model"
+	"github.com/aaron-vasilev/diary-templ/src/utils"
 )
 
 func GetQuestionByDate(db *sql.DB, date string) model.Question {
   var q model.Question
-  query := `SELECT * FROM diary.question q WHERE q.shown_date=$1;`
-  row := db.QueryRow(query, date).Scan(&q.Id, &q.Text, &q.ShownDate)
+  q.ShownDate = date
+
+  if !utils.ValidateDateString(date) {
+    return q
+  } 
+
+  query := `SELECT id, text FROM diary.question q WHERE q.shown_date=$1;`
+  splitedDate := strings.Split(date, "-")
+  querDate := "2024-" + splitedDate[1] + "-" + splitedDate[2]
+
+  row := db.QueryRow(query, querDate).Scan(&q.Id, &q.Text)
 
   if row == sql.ErrNoRows {
     fmt.Println("No question with that date")
   }
-
-  q.ShownDate = strings.Split(q.ShownDate, "T")[0]
 
   return q
 }

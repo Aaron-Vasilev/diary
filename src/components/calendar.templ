@@ -21,6 +21,11 @@ templ Calendar(date string) {
   <input 
     class="justify-self-start bg-secondary border-2 border-black shadow-xl font-Lilita text-3xl outline-primary md:justify-self-end md:col-start-2"
     type="date"
-    value={ date } 
+    id="calendar"
+    value={ date }
+    hx-post="/change-date"
+    hx-trigger="change"
+    hx-vals="javascript:{date: document.getElementById('calendar').value }"
+    hx-target="#diary"
   />
 }
