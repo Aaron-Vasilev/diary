@@ -10,16 +10,11 @@ import (
 )
 
 func Connect(app *echo.Echo, db *sql.DB) {
-  app.GET("/question-list", handler.HandlerCtx{
-    Db: db,
-  }.QuestionListHandler)
-
-  app.GET("/diary", handler.HandlerCtx{
-    Db: db,
-  }.Diary)
+  app.GET("/question-list", handler.HandlerCtx{ Db: db, }.QuestionListHandler)
+  app.GET("/diary", handler.HandlerCtx{ Db: db, }.Diary)
+  app.GET("/login", handler.HandlerCtx{ Db: db, }.LoginPage)
 
   app.GET("/auth/login", handler.HandlerCtx{ Db: db }.Login)
-
   app.GET("/auth/callback", handler.HandlerCtx{ Db: db }.AuthCallback)
 
   app.POST("/note", func(c echo.Context) error {

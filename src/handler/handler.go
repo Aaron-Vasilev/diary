@@ -65,6 +65,21 @@ func (h HandlerCtx) Diary(c echo.Context) error {
   }).Render(c.Request().Context(), c.Response())
 }
 
+func (h HandlerCtx) LoginPage(c echo.Context) error {
+  cookies, err := c.Cookie(TOKEN)
+
+  if err == nil {
+    token := cookies.Value
+    _, err := auth.DecodeJWT(token)
+    
+    if err == nil {
+      return c.Redirect(http.StatusFound, "/diary")
+    }
+  }
+
+  return pages.Login().Render(c.Request().Context(), c.Response())
+}
+
 func (h HandlerCtx) Login(ctx echo.Context) error {
   gothic.BeginAuthHandler(ctx.Response().Writer, ctx.Request())
   return nil

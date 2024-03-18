@@ -1,15 +1,30 @@
 package pages
 
 import "github.com/aaron-vasilev/diary-templ/src/components"
+import "os"
+
+func loginLink() string {
+  return os.Getenv("BASE_URL") + os.Getenv("PORT") + "/auth/login?provider=google"
+}
+
+func diaryLink() string {
+  return os.Getenv("BASE_URL") + os.Getenv("PORT") + "/diary" 
+}
 
 templ Login() {
   @components.Layout() {
     <div class="flex w-screen justify-center">
-      <div class="flex flex-col gap-2 border-sky-400">
-        <a href="http://localhost:3000/auth/login?provider=google">
+      <div class="flex flex-col gap-2 text-3xl border-sky-400 font-Lilita text-white text-center">
+        <a 
+          class="bg-secondary min-w-24 px-4 border-2 border-black shadow-m outline-primary"
+          href={templ.SafeURL(loginLink())}
+        >
           Login with GOOGLE
         </a>
-        <a href="http://localhost:3000/diary">
+        <a 
+          class="bg-tri min-w-24 px-4 border-2 border-black shadow-m outline-primary"
+          href={templ.SafeURL(diaryLink())}
+        >
           or continue without login 
         </a>
       </div>
