@@ -3,7 +3,7 @@ package pages
 import "github.com/aaron-vasilev/diary-templ/src/components"
 
 templ Diary(props components.DiaryProps) {
-  @components.Layout() {
+  @components.Layout(props.IsLogin) {
     <div
       id="diary"
       class="grid grid-cols-1 md:grid-cols-2 gap-4"

@@ -3,6 +3,7 @@ package components
 import "github.com/aaron-vasilev/diary-templ/src/model"
 
 type DiaryProps struct {
+  IsLogin bool
   User model.User
   Question model.Question
   Notes []model.Note
@@ -12,5 +13,5 @@ templ Diary(props DiaryProps) {
   @Calendar(props.Question.ShownDate)
   @Question(props.Question, props.User)
   @NoteList(props.Notes)
-  @CreateNote()
+  @CreateNote(props.Question)
 }

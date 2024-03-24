@@ -3,6 +3,7 @@ package handler
 import (
 	"database/sql"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/aaron-vasilev/diary-templ/src/auth"
@@ -19,20 +20,20 @@ type HandlerCtx struct {
   Db *sql.DB
 }
 
-const (
-  TOKEN string = "token"
-)
-
 func (h HandlerCtx) QuestionListHandler(ctx echo.Context) error {
   questions := controller.GetQuestions(h.Db)
 
-  return pages.QuestionList(questions).Render(ctx.Request().Context(), ctx.Response())
+  return pages.QuestionList(false, questions).Render(ctx.Request().Context(), ctx.Response())
 }
 
 func (h HandlerCtx) Diary(c echo.Context) error {
-  var user     model.User
+  isLogin := false
   var question model.Question
   var notes  []model.Note
+  user := model.User{
+    Name: "Anon",
+    Role: "user",
+  }
 
   shownDate := c.QueryParam("shown-date")
 
@@ -40,27 +41,17 @@ func (h HandlerCtx) Diary(c echo.Context) error {
     question.ShownDate = time.Now().Format("2006-01-02") 
   }
 
-  cookies, err := c.Cookie(TOKEN)
+  userClaims, err := auth.GetUserClaimsFromCtx(c)
   
   if err == nil {
-    token := cookies.Value
-    userClaim, err := auth.DecodeJWT(token)
-    
-    if err != nil {
-      utils.DeleteCookie(c, TOKEN)
-    } else {
-      user = controller.GetUserByEmail(h.Db, userClaim.Email)
-      question = controller.GetQuestionByDate(h.Db, question.ShownDate)
-      notes = controller.GetNotes(h.Db, user.Id, question.Id)
-    }
-  }
-
-  if user.Id == 0 {
-    user.Name = "Anon"
-    user.Role = "user"
+    isLogin = true
+    user = controller.GetUserByEmail(h.Db, userClaims.Email)
+    question = controller.GetQuestionByDate(h.Db, question.ShownDate)
+    notes = controller.GetNotes(h.Db, user.Id, question.Id)
   }
 
   return pages.Diary(components.DiaryProps{
+    IsLogin: isLogin,
     User: user,
     Question: question,
     Notes: notes,
@@ -68,18 +59,22 @@ func (h HandlerCtx) Diary(c echo.Context) error {
 }
 
 func (h HandlerCtx) LoginPage(c echo.Context) error {
-  cookies, err := c.Cookie(TOKEN)
+  isLogin := false
+  logoutStr := c.QueryParam("logout")
+  logout, err := strconv.ParseBool(logoutStr)
 
-  if err == nil {
-    token := cookies.Value
-    _, err := auth.DecodeJWT(token)
-    
-    if err == nil {
-      return c.Redirect(http.StatusFound, "/diary")
-    }
+  if err == nil && logout {
+    utils.DeleteCookie(c, utils.TOKEN)
+    return c.Redirect(http.StatusFound, "/login")
   }
 
-  return pages.Login().Render(c.Request().Context(), c.Response())
+  _, err = auth.GetUserClaimsFromCtx(c)
+    
+  if err == nil {
+    return c.Redirect(http.StatusFound, "/diary")
+  }
+
+  return pages.Login(isLogin).Render(c.Request().Context(), c.Response())
 }
 
 func (h HandlerCtx) Login(ctx echo.Context) error {
@@ -106,7 +101,7 @@ func (h HandlerCtx) AuthCallback(c echo.Context) error {
   }
 
 	cookie := new(http.Cookie)
-	cookie.Name = TOKEN
+	cookie.Name = utils.TOKEN
 	cookie.Value = token
 	cookie.Path = "/"
   c.SetCookie(cookie)

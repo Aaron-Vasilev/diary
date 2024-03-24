@@ -1,10 +1,16 @@
 package components
 
-templ CreateNote() {
+import "github.com/aaron-vasilev/diary-templ/src/model"
+
+func url(q model.Question) string {
+  return "/note?question_id=" + intToStr(q.Id) + "&created_date=" + q.ShownDate 
+}
+
+templ CreateNote(q model.Question) {
   <form 
     class="col-[1_/_-1] grid items-center gap-4"
     id="create-note"
-    hx-post="/note"
+    hx-post={url(q)}
     hx-target="#note-list"
     hx-swap="beforeend"
   >

@@ -3,8 +3,8 @@ package pages
 import "github.com/aaron-vasilev/diary-templ/src/model"
 import "github.com/aaron-vasilev/diary-templ/src/components"
 
-templ QuestionList(questions []model.Question) {
-  @components.Layout() {
+templ QuestionList(isLogin bool, questions []model.Question) {
+  @components.Layout(isLogin) {
     <ul>
       for _, q := range questions {
         @question(q)

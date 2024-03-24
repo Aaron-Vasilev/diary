@@ -17,15 +17,64 @@ templ Calendar(date string) {
       width: 2.6rem;
       height: 2.6rem;
     }
+
+    .buttom-triangle-up,
+    .buttom-triangle-down {
+      width: 0; 
+      height: 0; 
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-bottom: 8px solid black;
+    }
+
+    .buttom-triangle-down {
+      transform: rotate(180deg);
+    }
   </style>
-  <input 
-    class="justify-self-start bg-secondary border-2 border-black shadow-xl font-Lilita text-3xl outline-primary md:justify-self-end md:col-start-2"
-    type="date"
-    id="calendar"
-    value={ date }
-    hx-post="/change-date"
-    hx-trigger="change"
-    hx-vals="javascript:{date: document.getElementById('calendar').value }"
-    hx-target="#diary"
-  />
+  <div
+    class="justify-self-start md:justify-self-end md:col-start-2 flex md:flex-row-reverse"
+  >
+    <input 
+      class="bg-secondary border-2 border-black shadow-xl font-Lilita text-3xl outline-primary cursor-pointer"
+      type="date"
+      id="calendar"
+      value={ date }
+      hx-trigger="change"
+      hx-post="/change-date"
+      hx-vals="js:{date: document.getElementById('calendar').value }"
+      hx-target="#diary"
+    />
+    <div class="mx-3 flex flex-col place-content-between">
+      <div
+        class="mb-auto"
+      >
+        <button 
+          class="w-[42px] h-[23px] bg-secondary shadow-m border-black border-2 grid place-items-center"
+          type="submit" 
+          onclick="setDaysToCalendar(1)"
+          hx-post="/change-date"
+          hx-vals="js:{date: document.getElementById('calendar').value }"
+          hx-target="#diary"
+        >
+          <div
+            class="buttom-triangle-up"
+          />
+        </button>
+      </div>
+      <div>
+        <button 
+          class="w-[42px] h-[23px] bg-secondary shadow-m border-black border-2 grid place-items-center"
+          type="submit" 
+          onclick="setDaysToCalendar(-1)"
+          hx-post="/change-date"
+          hx-vals="js:{date: document.getElementById('calendar').value }"
+          hx-target="#diary"
+        >
+          <div
+            class="buttom-triangle-down"
+          />
+        </button>
+      </div>
+    </div>
+  </div>
 }

@@ -1,54 +1,103 @@
 package components
 
 import "github.com/aaron-vasilev/diary-templ/src/model"
+import "strconv"
+
+func actionsUrl(id int) string {
+  return "/note/" + strconv.Itoa(id)
+}
+
+func noteId(id int) string {
+  return "note-" + strconv.Itoa(id)
+}
 
 templ NoteList(notes []model.Note) {
   <div class="md:col-span-2">
     <h3 class="mb-4 text-xl underline underline-offset-4">Note History:</h3>
-    if len(notes) == 0 {
-      <h2 class="px-4 text-xl">
-        You don&apos;t have any notes... Yet 🐣
-      </h2>
-    } else {
-      <div 
-        class="grid gap-4"
-        id="note-list" 
-        onhtmx:load="console.log(888)"
-      >
-       for _, note := range notes {
-         @Note(note)
-       }
-      </div>
-    }
+    <div 
+      class="grid gap-4"
+      id="note-list" 
+    >
+      if len(notes) == 0 {
+        <h2 class="px-4 text-xl" id="note-list-placeholder">
+          You don&apos;t have any notes... Yet 🐣
+        </h2>
+      } else {
+         for _, note := range notes {
+           @Note(note)
+         }
+      }
+    </div>
   </div>
 }
 
-templ Note(note model.Note) {
-  <div class="whitespace-pre-line border-8 border-solid border-primary p-2 shadow-xl">
+templ NoteSkeleton(note model.Note, editable string) {
+  <div 
+    id={noteId(note.Id)}
+    class="whitespace-pre-line border-8 border-solid border-primary p-2 shadow-xl"
+  >
     <div class="flex justify-between">
       <h2 class="font-Lilita text-lg underline decoration-dashed underline-offset-4">
         <span class="mr-1 text-2xl">
-          Date: 
+          Date:
         </span>
         {note.CreatedDate}
       </h2>
-      @Actions()
+      {children...}
     </div>
-    <p class="p-2 text-base">
+    <p class="p-2 outline-none" contenteditable={editable}>
       {note.Text}
     </p>
   </div>
 }
 
-templ Actions() {
+templ Note(n model.Note) {
+  @NoteSkeleton(n, "false") {
+    @Actions(n.Id)
+  }
+}
+
+templ EditNote(n model.Note) {
+  @NoteSkeleton(n, "true") {
+    @EditActions(n.Id)
+  }
+}
+
+templ Actions(id int) {
+  <div class="flex gap-2">
+    <img
+      class="cursor-pointer"
+      hx-put={actionsUrl(id)}
+      hx-target={"#" + noteId(id)}
+      hx-swap="outerHTML"
+      src={publicUrl("images/edit.svg")}
+    />
+    <img
+      class="cursor-pointer"
+      hx-delete={actionsUrl(id)}
+      hx-target={"#" + noteId(id)}
+      hx-swap="delete"
+      src={publicUrl("images/delete.svg")}
+    />
+  </div>
+}
+
+templ EditActions(id int) {
   <div class="flex gap-2">
     <img 
-      src="/public/edit.svg" 
       class="cursor-pointer"
+      hx-put={actionsUrl(id)}
+      hx-target={"#" + noteId(id)}
+      hx-swap="outerHTML"
+      hx-vals="js:{text: document.getElementById('note-678').lastChild.innerText }"
+      src={publicUrl("images/accept.svg")}
     />
     <img 
-      src="/public/delete.svg"
       class="cursor-pointer"
+      hx-get={actionsUrl(id)}
+      hx-target={"#" + noteId(id)}
+      hx-swap="outerHTML"
+      src={publicUrl("images/decline.svg")}
     />
   </div>
 }

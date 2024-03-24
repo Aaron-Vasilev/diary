@@ -7,6 +7,9 @@ document.addEventListener('htmx:load', function(event) {
   if (parentId === 'note-list') {
     document.querySelector('textarea').value = ''
     localStorage.clear(TOKEN)
+
+    const placeholder = document.querySelector('#note-list-placeholder')
+    if (placeholder) placeholder.style = "display: none;"
   }
 })
 
@@ -26,3 +29,11 @@ function debounce(func, delay = 300) {
 }
 
 const debouncedSave = debounce(saveLocally)
+
+function setDaysToCalendar(dif) {
+  const calendar = document.getElementById('calendar')
+  const res = new Date(calendar.value)
+  res.setDate(res.getDate() + dif)
+
+  calendar.value = res.toISOString().split('T')[0]
+}

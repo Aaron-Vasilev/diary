@@ -5,8 +5,10 @@ import (
 	"time"
 
 	"github.com/aaron-vasilev/diary-templ/src/model"
+	"github.com/aaron-vasilev/diary-templ/src/utils"
 	"github.com/golang-jwt/jwt"
 	"github.com/gorilla/sessions"
+	"github.com/labstack/echo/v4"
 	"github.com/markbates/goth"
 
 	"github.com/markbates/goth/gothic"
@@ -64,4 +66,21 @@ func DecodeJWT(accessToken string) (*UserClaims, error) {
  })
 
  return parsedAccessToken.Claims.(*UserClaims), err
+}
+
+func GetUserClaimsFromCtx(c echo.Context) (*UserClaims, error) {
+  cookies, err := c.Cookie(utils.TOKEN)
+
+  if err != nil {
+    return nil, err
+  }
+
+  token := cookies.Value
+  userClaim, err := DecodeJWT(token)
+
+  if err != nil {
+    utils.DeleteCookie(c, utils.TOKEN)
+  }
+
+  return userClaim, nil
 }
