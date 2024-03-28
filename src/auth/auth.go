@@ -18,7 +18,7 @@ import (
 func NewAuth() {
   clientId := os.Getenv("GOOGLE_CLIENT_ID")
   secret := os.Getenv("GOOGLE_CLIENT_SECRET")
-  url := os.Getenv("BASE_URL") + os.Getenv("PORT") +"/auth/callback?provider=google"
+  url := os.Getenv("BASE_URL") + "auth/callback?provider=google"
 
   gothic.Store = sessions.NewCookieStore([]byte("randomString"))
 

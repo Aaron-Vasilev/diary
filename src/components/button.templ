@@ -37,8 +37,9 @@ func typeClass(t btnType) string {
   return class
 }
 
-templ Button(label string, size sizeType, btnType btnType) {
+templ Button(onclick templ.ComponentScript, label string, size sizeType, btnType btnType) {
   <button
+    onclick={onclick}
     class={
       sizeClass(size),
       typeClass(btnType),
@@ -47,4 +48,8 @@ templ Button(label string, size sizeType, btnType btnType) {
   >
     {label}
   </button>
+}
+
+script DummyClick() {
+  null
 }

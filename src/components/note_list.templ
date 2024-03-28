@@ -31,7 +31,7 @@ templ NoteList(notes []model.Note) {
   </div>
 }
 
-templ NoteSkeleton(note model.Note, editable string) {
+templ noteSkeleton(note model.Note, editable string) {
   <div 
     id={noteId(note.Id)}
     class="whitespace-pre-line border-8 border-solid border-primary p-2 shadow-xl"
@@ -52,18 +52,27 @@ templ NoteSkeleton(note model.Note, editable string) {
 }
 
 templ Note(n model.Note) {
-  @NoteSkeleton(n, "false") {
-    @Actions(n.Id)
+  @noteSkeleton(n, "false") {
+    @actions(n.Id)
   }
 }
 
 templ EditNote(n model.Note) {
-  @NoteSkeleton(n, "true") {
-    @EditActions(n.Id)
+  @noteSkeleton(n, "true") {
+    @editActions(n.Id)
   }
 }
 
-templ Actions(id int) {
+script closeDialog() {
+  closeDialog()
+}
+
+templ actions(id int) {
+  <style type="text/css">
+    dialog {
+      background-image: linear-gradient(to bottom right, rgba(255, 255, 232, 1), rgba(255, 178, 230, 0.3));
+    }
+  </style>
   <div class="flex gap-2">
     <img
       class="cursor-pointer"
@@ -74,15 +83,35 @@ templ Actions(id int) {
     />
     <img
       class="cursor-pointer"
-      hx-delete={actionsUrl(id)}
-      hx-target={"#" + noteId(id)}
-      hx-swap="delete"
+      del-id={intToStr(id)}
+      onclick="openDialog()"
       src={publicUrl("images/delete.svg")}
     />
   </div>
+  <dialog
+    class="p-6 min-h-[30vh] min-w-[50vw] backdrop:bg-neutral-200 backdrop:opacity-75"
+  >
+    <div
+      class="grid gap-4"
+    >
+      <h2 className="font-Lilita text-2xl">
+        Do I really want to delete the note?
+      </h2>
+      <div class="flex justify-center gap-4">
+        <form 
+          hx-delete={actionsUrl(id)}
+          hx-swap="delete"
+          hx-target={"#" + noteId(id)}
+        >
+          @Button(closeDialog(), "Yes", 'M', "primary")
+        </form>
+        @Button(closeDialog(), "No", 'M', "primary")
+      </div>
+    </div>
+  </dialog>
 }
 
-templ EditActions(id int) {
+templ editActions(id int) {
   <div class="flex gap-2">
     <img 
       class="cursor-pointer"

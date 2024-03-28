@@ -15,6 +15,6 @@ templ CreateNote(q model.Question) {
     hx-swap="beforeend"
   >
     @InputArea()
-    @Button("Add", M, PRIMARY)
+    @Button(DummyClick(), "Add", M, PRIMARY)
   </form>
 }

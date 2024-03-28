@@ -37,3 +37,13 @@ function setDaysToCalendar(dif) {
 
   calendar.value = res.toISOString().split('T')[0]
 }
+
+function openDialog() {
+  d = document.querySelector('dialog')
+  d.showModal()
+}
+
+function closeDialog() {
+  d = document.querySelector('dialog')
+  d.close()
+}

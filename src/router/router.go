@@ -25,7 +25,9 @@ func ConnectRoutes(app *echo.Echo, db *sql.DB) {
     fmt.Println("✡️  line 24 test")
     return c.String(http.StatusOK, "test")
   })
-
+  app.GET("/*", func(c echo.Context) error {
+    return c.Redirect(http.StatusFound, "/login")
+  })
 
   app.POST("/note", func(c echo.Context) error {
     noteText := c.Request().FormValue("note")
