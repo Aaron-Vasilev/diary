@@ -59,7 +59,6 @@ func (h HandlerCtx) Diary(c echo.Context) error {
 }
 
 func (h HandlerCtx) LoginPage(c echo.Context) error {
-  isLogin := false
   logoutStr := c.QueryParam("logout")
   logout, err := strconv.ParseBool(logoutStr)
 
@@ -74,7 +73,7 @@ func (h HandlerCtx) LoginPage(c echo.Context) error {
     return c.Redirect(http.StatusFound, "/diary")
   }
 
-  return pages.Login(isLogin).Render(c.Request().Context(), c.Response())
+  return pages.Login().Render(c.Request().Context(), c.Response())
 }
 
 func (h HandlerCtx) Login(ctx echo.Context) error {
