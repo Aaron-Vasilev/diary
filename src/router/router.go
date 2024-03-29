@@ -96,7 +96,7 @@ func ConnectRoutes(app *echo.Echo, db *sql.DB) {
     return c.NoContent(http.StatusOK)
   })
 
-   app.POST("/change-date", func(c echo.Context) error {
+  app.POST("/change-date", func(c echo.Context) error {
     var question model.Question
     var notes  []model.Note
     user := model.User{
@@ -117,5 +117,13 @@ func ConnectRoutes(app *echo.Echo, db *sql.DB) {
       Question: question,
       Notes: notes,
     }).Render(c.Request().Context(), c.Response())
+  })
+
+  app.POST("/question-search", func(c echo.Context) error {
+    search := c.FormValue("search")
+
+    questions := controller.GetQuestionsLike(db, search)
+
+    return components.QuestionList(questions).Render(c.Request().Context(), c.Response())
   })
 }

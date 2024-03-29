@@ -20,10 +20,14 @@ type HandlerCtx struct {
   Db *sql.DB
 }
 
-func (h HandlerCtx) QuestionListHandler(ctx echo.Context) error {
+func (h HandlerCtx) QuestionListHandler(c echo.Context) error {
   questions := controller.GetQuestions(h.Db)
 
-  return pages.QuestionList(false, questions).Render(ctx.Request().Context(), ctx.Response())
+  _, err := auth.GetUserClaimsFromCtx(c)
+
+  if err != nil { return c.Redirect(http.StatusFound, "/login") }
+
+  return pages.QuestionList(true, questions).Render(c.Request().Context(), c.Response())
 }
 
 func (h HandlerCtx) Diary(c echo.Context) error {

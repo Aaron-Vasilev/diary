@@ -46,7 +46,20 @@ templ Layout(isLogin, showNav bool) {
           One Day One Question
         </h1>
         <nav class="flex flex-col gap-3 justify-end md:flex-row">
+        if showNav {
           if isLogin {
+            <a
+              class='underline leading-8'
+              href="/diary"
+            >
+              Diary
+            </a>
+            <a
+              class='underline leading-8'
+              href="/question-list"
+            >
+              List
+            </a>
             <a
               class='underline leading-8'
               href="/login?logout=true"
@@ -57,10 +70,11 @@ templ Layout(isLogin, showNav bool) {
             <a
               class='underline leading-8'
               href="/login"
-            >
+              >
               Login
-            </a>
+              </a>
           }
+        }
         </nav>
       </header>
       <main

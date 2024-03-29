@@ -1,0 +1,22 @@
+echo "START tailwind"
+npx tailwindcss -o ./public/styles/out.css
+echo "END tailwind"
+echo "START templ"
+templ generate
+echo "END templ"
+echo "START build"
+GOOS=linux GOARCH=arm64 go build -tags lambda.norpc -o bootstrap ./src/main.go;
+echo "END build"
+echo "START zip"
+zip myFunction.zip bootstrap;
+echo "END zip"
+echo "START lambda update"
+aws lambda update-function-code --function-name myFunction \
+--profile private \
+--zip-file fileb:///Users/avasilev/projects/my/diary_go/myFunction.zip;
+
+echo "END lambda update"
+
+aws s3 cp ./public/styles/global.css s3://odoq/styles/ --profile private;
+aws s3 cp ./public/styles/out.css s3://odoq/styles/ --profile private;
+aws s3 cp ./public/index.js s3://odoq/ --profile private;

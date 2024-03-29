@@ -24,7 +24,7 @@ func main() {
   app := echo.New()
   db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
 
-  if err != nil {
+  if err = db.Ping(); err != nil {
     log.Fatal("Error connecting to db", err)
   }
   defer db.Close()

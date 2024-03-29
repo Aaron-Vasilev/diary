@@ -92,6 +92,31 @@ func GetQuestions(db *sql.DB) []model.Question {
   return questions
 }
 
+func GetQuestionsLike(db *sql.DB, search string) []model.Question {
+  var questions []model.Question
+  query := `SELECT * FROM diary.question q WHERE q.text LIKE $1 ORDER BY shown_date ASC;`
+
+  rows, err := db.Query(query, "%" + search + "%")
+
+  if err == nil {
+    for rows.Next() {
+      var q model.Question
+      var dateString string
+
+      rows.Scan(&q.Id, &q.Text, &dateString)
+
+      dateWithoutTime := strings.Split(dateString, "T")
+      q.ShownDate = dateWithoutTime[0]
+
+      questions = append(questions, q)
+    }
+  }
+  defer rows.Close()
+
+  return questions
+}
+
+
 func GetNoteById(db *sql.DB, id int) model.Note {
   var n model.Note
   query := `SELECT * FROM diary.note WHERE id=$1`
