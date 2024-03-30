@@ -97,7 +97,7 @@ func ConnectRoutes(app *echo.Echo, db *sql.DB) {
   })
 
   app.POST("/change-date", func(c echo.Context) error {
-    var question model.Question
+    question := controller.GetQuestionByDate(db, c.FormValue("date"))
     var notes  []model.Note
     user := model.User{
       Name: "Anon",
@@ -108,7 +108,6 @@ func ConnectRoutes(app *echo.Echo, db *sql.DB) {
 
     if err == nil {
       user = controller.GetUserByEmail(db, userClaims.Email)
-      question = controller.GetQuestionByDate(db, c.FormValue("date"))
       notes = controller.GetNotes(db, user.Id, question.Id)
     }
 

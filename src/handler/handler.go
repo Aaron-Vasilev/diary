@@ -50,9 +50,9 @@ func (h HandlerCtx) Diary(c echo.Context) error {
   if err == nil {
     isLogin = true
     user = controller.GetUserByEmail(h.Db, userClaims.Email)
-    question = controller.GetQuestionByDate(h.Db, question.ShownDate)
     notes = controller.GetNotes(h.Db, user.Id, question.Id)
   }
+  question = controller.GetQuestionByDate(h.Db, question.ShownDate)
 
   return pages.Diary(components.DiaryProps{
     IsLogin: isLogin,

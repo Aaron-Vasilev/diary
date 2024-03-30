@@ -1,7 +1,6 @@
 .env
 *_templ.go
 tmp
-port
 out.css
 bootstrap
 *.zip
