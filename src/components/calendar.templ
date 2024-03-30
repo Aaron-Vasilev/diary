@@ -1,6 +1,6 @@
 package components
 
-templ Calendar(date string) {
+templ Calendar(path, target, date string) {
   <style type="text/css">
     input[type="date"] {
       color: white;
@@ -37,12 +37,12 @@ templ Calendar(date string) {
     <input 
       class="bg-secondary border-2 border-black shadow-xl font-Lilita text-3xl outline-primary cursor-pointer"
       type="date"
+      name="date"
       id="calendar"
       value={ date }
       hx-trigger="change"
-      hx-post="/change-date"
-      hx-vals="js:{date: document.getElementById('calendar').value }"
-      hx-target="#diary"
+      hx-post={path}
+      hx-target={target}
     />
     <div class="mx-3 flex flex-col place-content-between">
       <div
@@ -52,9 +52,9 @@ templ Calendar(date string) {
           class="w-[42px] h-[23px] bg-secondary shadow-m border-black border-2 grid place-items-center"
           type="submit" 
           onclick="setDaysToCalendar(1)"
-          hx-post="/change-date"
+          hx-post={path}
           hx-vals="js:{date: document.getElementById('calendar').value }"
-          hx-target="#diary"
+          hx-target={target}
         >
           <div
             class="buttom-triangle-up"
@@ -66,9 +66,9 @@ templ Calendar(date string) {
           class="w-[42px] h-[23px] bg-secondary shadow-m border-black border-2 grid place-items-center"
           type="submit" 
           onclick="setDaysToCalendar(-1)"
-          hx-post="/change-date"
+          hx-post={path}
           hx-vals="js:{date: document.getElementById('calendar').value }"
-          hx-target="#diary"
+          hx-target={target}
         >
           <div
             class="buttom-triangle-down"

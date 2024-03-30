@@ -47,12 +47,12 @@ func (h HandlerCtx) Diary(c echo.Context) error {
 
   userClaims, err := auth.GetUserClaimsFromCtx(c)
   
+  question = controller.GetQuestionByDate(h.Db, question.ShownDate)
   if err == nil {
     isLogin = true
     user = controller.GetUserByEmail(h.Db, userClaims.Email)
     notes = controller.GetNotes(h.Db, user.Id, question.Id)
   }
-  question = controller.GetQuestionByDate(h.Db, question.ShownDate)
 
   return pages.Diary(components.DiaryProps{
     IsLogin: isLogin,
@@ -110,4 +110,28 @@ func (h HandlerCtx) AuthCallback(c echo.Context) error {
   c.SetCookie(cookie)
 
   return c.Redirect(http.StatusFound, "/diary")
+}
+
+func (h HandlerCtx) UpdateQuestion(c echo.Context) error {
+  _, err := auth.GetUserClaimsFromCtx(c)
+    
+  if err != nil {
+    return c.Redirect(http.StatusFound, "/diary")
+  }
+
+  var question model.Question
+  shownDate := c.QueryParam("shown-date")
+
+  if shownDate == "" {
+    question.ShownDate = time.Now().Format("2006-01-02") 
+  }
+  
+  question = controller.GetQuestionByDate(h.Db, question.ShownDate)
+
+  return pages.UpdateQuestion(pages.UpdateQuestionProps{
+    Question: question,
+    User: model.User{
+      Name: "Aaron",
+    },
+  }).Render(c.Request().Context(), c.Response())
 }

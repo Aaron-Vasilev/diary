@@ -116,6 +116,21 @@ func GetQuestionsLike(db *sql.DB, search string) []model.Question {
   return questions
 }
 
+func UpdateQuestion(db *sql.DB, id int, text string) model.Question {
+  var q model.Question
+  query := `UPDATE diary.question SET text=$1 WHERE id=$2 RETURNING *;`
+
+  db.QueryRow(query, text, id).Scan(
+    &q.Id,
+    &q.Text,
+    &q.ShownDate,
+  )
+
+  q.ShownDate = utils.BeautyDate(q.ShownDate)
+
+  return q
+}
+
 
 func GetNoteById(db *sql.DB, id int) model.Note {
   var n model.Note

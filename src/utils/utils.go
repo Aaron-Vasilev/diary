@@ -3,6 +3,7 @@ package utils
 import (
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -32,4 +33,8 @@ func IsProd() bool {
 
 func BeautyDate(date string) string {
   return strings.Split(date, "T")[0]
+}
+
+func Int(i int) string {
+  return strconv.Itoa(i)
 }

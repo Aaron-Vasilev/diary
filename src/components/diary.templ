@@ -10,7 +10,7 @@ type DiaryProps struct {
 }
 
 templ Diary(props DiaryProps) {
-  @Calendar(props.Question.ShownDate)
+  @Calendar("/change-date", "#diary", props.Question.ShownDate)
   @Question(props.Question, props.User)
   @NoteList(props.Notes)
   @CreateNote(props.Question)

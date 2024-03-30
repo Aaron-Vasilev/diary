@@ -18,6 +18,7 @@ func ConnectRoutes(app *echo.Echo, db *sql.DB) {
   app.GET("/question-list", handler.HandlerCtx{ Db: db, }.QuestionListHandler)
   app.GET("/diary", handler.HandlerCtx{ Db: db, }.Diary)
   app.GET("/login", handler.HandlerCtx{ Db: db, }.LoginPage)
+  app.GET("/update-question", handler.HandlerCtx{ Db: db, }.UpdateQuestion)
 
   app.GET("/auth/login", handler.HandlerCtx{ Db: db }.Login)
   app.GET("/auth/callback", handler.HandlerCtx{ Db: db }.AuthCallback)
@@ -124,5 +125,33 @@ func ConnectRoutes(app *echo.Echo, db *sql.DB) {
     questions := controller.GetQuestionsLike(db, search)
 
     return components.QuestionList(questions).Render(c.Request().Context(), c.Response())
+  })
+
+  app.POST("/update-question", func(c echo.Context) error {
+    question := controller.GetQuestionByDate(db, c.FormValue("date"))
+    user := model.User{
+      Name: "Aaron",
+      Id: 1,
+    }
+
+    return components.Question(question, user).Render(c.Request().Context(), c.Response())
+  })
+
+  app.PUT("/update-question", func(c echo.Context) error {
+    _, err := auth.GetUserClaimsFromCtx(c)
+
+    if err != nil { return c.NoContent(http.StatusUnauthorized) }
+
+    newQuestion := c.FormValue("question")
+    questionIdStr := c.QueryParam("id")
+    id, _ := strconv.Atoi(questionIdStr)
+
+    question := controller.UpdateQuestion(db, id, newQuestion)
+    user := model.User{
+      Name: "Aaron",
+      Id: 1,
+    }
+
+    return components.Question(question, user).Render(c.Request().Context(), c.Response())
   })
 }

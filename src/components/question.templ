@@ -8,7 +8,7 @@ func intToStr(i int) string {
 }
 
 templ Question(q model.Question, u model.User) {
-  <div class="md:row-start-1">
+  <div id="question" class="md:row-start-1">
     <h3 class="text-xl underline underline-offset-4">
       #{intToStr(u.Id)} {u.Name}&apos;s daily question
     </h3>
