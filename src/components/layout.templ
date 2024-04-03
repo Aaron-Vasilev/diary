@@ -3,7 +3,7 @@ package components
 import "os"
 
 func publicUrl(path string) string {
-  return os.Getenv("PUBLIC_URL") + path
+  return os.Getenv("PUBLIC_URL") + path + "?v=1"
 }
 
 templ Layout(isLogin, showNav bool) {

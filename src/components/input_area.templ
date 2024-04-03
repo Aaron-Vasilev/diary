@@ -2,6 +2,7 @@ package components
 
 templ InputArea() {
   <textarea 
+    id="input-area"
     class="w-full h-fit border-8 border-solid border-primary bg-transparent p-4 shadow-xl outline-none" 
     name="note"
     oninput="debouncedSave(this.value)"

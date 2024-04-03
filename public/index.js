@@ -3,6 +3,7 @@ const TOKEN = 'token'
 document.addEventListener('htmx:load', function(event) {
   const node = event.detail.elt
   const parentId = node.parentElement.id
+  const noteFromStoratge = localStorage.getItem(TOKEN)
 
   if (parentId === 'note-list') {
     document.querySelector('textarea').value = ''
@@ -10,6 +11,13 @@ document.addEventListener('htmx:load', function(event) {
 
     const placeholder = document.querySelector('#note-list-placeholder')
     if (placeholder) placeholder.style = "display: none;"
+  }
+
+  if (node && noteFromStoratge) {
+    const input = document.getElementById("input-area")
+
+    if (input)
+      input.innerText = noteFromStoratge
   }
 })
 
@@ -19,11 +27,11 @@ function saveLocally(value) {
 
 function debounce(func, delay = 300) {
   let timer
+
   return function(...args) {
-    if (!timer) func(args)
     clearTimeout(timer)
     timer = setTimeout(() => {
-      timer = null
+      func(...args)
     }, delay)
   }
 }

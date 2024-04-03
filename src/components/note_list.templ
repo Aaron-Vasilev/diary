@@ -11,6 +11,11 @@ func noteId(id int) string {
   return "note-" + strconv.Itoa(id)
 }
 
+func elementText(id int) string {
+  str := "js:{text: document.getElementById('note-" + strconv.Itoa(id) + "').lastChild.innerText }"
+  return str
+}
+
 templ NoteList(notes []model.Note) {
   <div class="md:col-span-2">
     <h3 class="mb-4 text-xl underline underline-offset-4">Note History:</h3>
@@ -115,11 +120,11 @@ templ editActions(id int) {
   <div class="flex gap-2">
     <img 
       class="cursor-pointer"
+      src={publicUrl("images/accept.svg")}
       hx-put={actionsUrl(id)}
       hx-target={"#" + noteId(id)}
       hx-swap="outerHTML"
-      hx-vals="js:{text: document.getElementById('note-678').lastChild.innerText }"
-      src={publicUrl("images/accept.svg")}
+      hx-vals={elementText(id)}
     />
     <img 
       class="cursor-pointer"
