@@ -21,6 +21,15 @@ document.addEventListener('htmx:load', function(event) {
   }
 })
 
+document.addEventListener('htmx:beforeSend', function(event) {
+  const path = event.detail.requestConfig.path
+  const method = event.detail.requestConfig.verb
+
+  if (path.startsWith('/note') && method === 'post') {
+    event.detail.requestConfig.parameters['createdDate'] = todayDateStr()
+  }
+})
+
 function saveLocally(value) {
   localStorage.setItem(TOKEN, value)
 }
@@ -54,4 +63,13 @@ function openDialog() {
 function closeDialog() {
   d = document.querySelector('dialog')
   d.close()
+}
+
+function todayDateStr() {
+  const date = new Date()
+  const year = date.getFullYear()
+  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+  const day = date.getDate().toString().padStart(2, '0')
+
+  return `${year}-${month}-${day}`
 }

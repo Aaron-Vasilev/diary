@@ -32,7 +32,7 @@ func ConnectRoutes(app *echo.Echo, db *sql.DB) {
 
   app.POST("/note", func(c echo.Context) error {
     noteText := c.Request().FormValue("note")
-    date := c.QueryParam("created_date")
+    date := c.Request().FormValue("createdDate")
     questionIdStr := c.QueryParam("question_id")
     questionId, err := strconv.Atoi(questionIdStr)
 
