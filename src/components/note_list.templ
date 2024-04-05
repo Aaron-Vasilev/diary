@@ -58,7 +58,7 @@ templ noteSkeleton(note model.Note, editable string) {
 
 templ Note(n model.Note) {
   @noteSkeleton(n, "false") {
-    @actions(n.Id)
+    @actions(n.Id, n.Text)
   }
 }
 
@@ -68,14 +68,25 @@ templ EditNote(n model.Note) {
   }
 }
 
-script closeDialog() {
-  closeDialog()
+script closeDialog(id int) {
+  closeDialog(id)
 }
 
-templ actions(id int) {
+script openDialog(id int) {
+  openDialog(id)
+}
+
+templ actions(id int, text string) {
   <style type="text/css">
     dialog {
       background-image: linear-gradient(to bottom right, rgba(255, 255, 232, 1), rgba(255, 178, 230, 0.3));
+      border: 2px solid black;
+    }
+
+    dialog p {
+      padding: 2rem;
+      border-bottom: 2px solid black;
+      padding: 0.25rem;
     }
   </style>
   <div class="flex gap-2">
@@ -88,29 +99,30 @@ templ actions(id int) {
     />
     <img
       class="cursor-pointer"
-      del-id={intToStr(id)}
-      onclick="openDialog()"
+      onclick={openDialog(id)}
       src={publicUrl("images/delete.svg")}
     />
   </div>
   <dialog
-    class="p-6 min-h-[30vh] min-w-[50vw] backdrop:bg-neutral-200 backdrop:opacity-75"
+    id={"dialog-" + intToStr(id)}
+    class="p-6 min-h-[30vh] min-w-[50vw] backdrop:bg-neutral-200 backdrop:opacity-75 shadow-xl"
   >
-    <div
-      class="grid gap-4"
-    >
-      <h2 className="font-Lilita text-2xl">
+    <div class="grid gap-4">
+      <h2 class="font-Lilita text-2xl text-center">
         Do I really want to delete the note?
       </h2>
+      <p>
+      {text}
+      </p>
       <div class="flex justify-center gap-4">
         <form 
           hx-delete={actionsUrl(id)}
           hx-swap="delete"
           hx-target={"#" + noteId(id)}
         >
-          @Button(closeDialog(), "Yes", 'M', "primary")
+          @Button(closeDialog(id), "Yes", 'M', "primary")
         </form>
-        @Button(closeDialog(), "No", 'M', "primary")
+        @Button(closeDialog(id), "No", 'M', "primary")
       </div>
     </div>
   </dialog>
