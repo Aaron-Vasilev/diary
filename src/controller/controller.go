@@ -13,7 +13,7 @@ func GetQuestionByDate(db *sql.DB, date string) model.Question {
   var q model.Question
   q.ShownDate = date
 
-  if !utils.ValidateDateString(date) {
+  if !utils.DateStrIsValid(date) {
     return q
   } 
 

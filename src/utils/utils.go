@@ -14,9 +14,11 @@ const (
   TOKEN string = "token"
 )
 
-func ValidateDateString(dateStr string) bool {
-    _, err := time.Parse("2006-01-02", dateStr)
-    return err == nil
+func DateStrIsValid(dateStr string) bool {
+  if dateStr == "" { return false }
+
+  _, err := time.Parse("2006-01-02", dateStr)
+  return err == nil
 }
 
 func DeleteCookie(c echo.Context, tokenName string) {

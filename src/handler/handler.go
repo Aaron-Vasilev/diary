@@ -41,8 +41,10 @@ func (h HandlerCtx) Diary(c echo.Context) error {
 
   shownDate := c.QueryParam("shown-date")
 
-  if shownDate == "" {
+  if !utils.DateStrIsValid(shownDate) {
     question.ShownDate = time.Now().Format("2006-01-02") 
+  } else {
+    question.ShownDate = shownDate
   }
 
   userClaims, err := auth.GetUserClaimsFromCtx(c)
@@ -122,8 +124,10 @@ func (h HandlerCtx) UpdateQuestion(c echo.Context) error {
   var question model.Question
   shownDate := c.QueryParam("shown-date")
 
-  if shownDate == "" {
+  if !utils.DateStrIsValid(shownDate) {
     question.ShownDate = time.Now().Format("2006-01-02") 
+  } else {
+    question.ShownDate = shownDate
   }
   
   question = controller.GetQuestionByDate(h.Db, question.ShownDate)
@@ -131,6 +135,7 @@ func (h HandlerCtx) UpdateQuestion(c echo.Context) error {
   return pages.UpdateQuestion(pages.UpdateQuestionProps{
     Question: question,
     User: model.User{
+      Id: 1,
       Name: "Aaron",
     },
   }).Render(c.Request().Context(), c.Response())
