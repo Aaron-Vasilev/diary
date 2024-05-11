@@ -40,3 +40,8 @@ func BeautyDate(date string) string {
 func Int(i int) string {
   return strconv.Itoa(i)
 }
+
+func PublicUrl(path string) string {
+  return os.Getenv("PUBLIC_URL") + path
+}
+

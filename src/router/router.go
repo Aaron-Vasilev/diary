@@ -15,6 +15,8 @@ import (
 )
 
 func ConnectRoutes(app *echo.Echo, db *sql.DB) {
+  // Pages
+  app.GET("/", handler.HandlerCtx{ Db: db, }.Home)
   app.GET("/question-list", handler.HandlerCtx{ Db: db, }.QuestionListHandler)
   app.GET("/diary", handler.HandlerCtx{ Db: db, }.Diary)
   app.GET("/login", handler.HandlerCtx{ Db: db, }.LoginPage)
@@ -30,6 +32,8 @@ func ConnectRoutes(app *echo.Echo, db *sql.DB) {
     return c.Redirect(http.StatusFound, "/login")
   })
 
+
+  // Handlers
   app.POST("/note", func(c echo.Context) error {
     noteText := c.Request().FormValue("note")
     date := c.Request().FormValue("createdDate")

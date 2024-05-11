@@ -1,6 +1,7 @@
 package components
 
 import "github.com/aaron-vasilev/diary-templ/src/model"
+import "github.com/aaron-vasilev/diary-templ/src/utils"
 import "strconv"
 
 func actionsUrl(id int) string {
@@ -95,12 +96,14 @@ templ actions(id int, text string) {
       hx-put={actionsUrl(id)}
       hx-target={"#" + noteId(id)}
       hx-swap="outerHTML"
-      src={publicUrl("images/edit.svg")}
+      alt="edit icon"
+      src={utils.PublicUrl("images/edit.svg")}
     />
     <img
       class="cursor-pointer"
+      alt="delete icon"
       onclick={openDialog(id)}
-      src={publicUrl("images/delete.svg")}
+      src={utils.PublicUrl("images/delete.svg")}
     />
   </div>
   <dialog
@@ -132,18 +135,20 @@ templ editActions(id int) {
   <div class="flex gap-2">
     <img 
       class="cursor-pointer"
-      src={publicUrl("images/accept.svg")}
       hx-put={actionsUrl(id)}
       hx-target={"#" + noteId(id)}
       hx-swap="outerHTML"
       hx-vals={elementText(id)}
+      alt="accept icon"
+      src={utils.PublicUrl("images/accept.svg")}
     />
     <img 
       class="cursor-pointer"
       hx-get={actionsUrl(id)}
       hx-target={"#" + noteId(id)}
       hx-swap="outerHTML"
-      src={publicUrl("images/decline.svg")}
+      alt="accept icon"
+      src={utils.PublicUrl("images/decline.svg")}
     />
   </div>
 }

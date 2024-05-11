@@ -20,6 +20,10 @@ type HandlerCtx struct {
   Db *sql.DB
 }
 
+func (h HandlerCtx) Home(c echo.Context) error {
+  return pages.Home().Render(c.Request().Context(), c.Response())
+}
+
 func (h HandlerCtx) QuestionListHandler(c echo.Context) error {
   questions := controller.GetQuestions(h.Db)
 

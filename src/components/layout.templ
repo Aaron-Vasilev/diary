@@ -1,9 +1,10 @@
 package components
 
+import "github.com/aaron-vasilev/diary-templ/src/utils"
 import "os"
 
-func publicUrl(path string) string {
-  return os.Getenv("PUBLIC_URL") + path
+func homeLink() string { 
+  return os.Getenv("BASE_URL")
 }
 
 templ Layout(isLogin, showNav bool) {
@@ -32,10 +33,21 @@ templ Layout(isLogin, showNav bool) {
       <title>One Day One Question</title>
       <meta charset="UTF-8"/>
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-      <title>HTMX Example</title>
+      <meta name="description" content="365 questions to track your life's progress and remember every meaningful moment."/>
+      <meta property="og:description" content="365 questions to track your life's progress and remember every meaningful moment."/>
+      <meta property="og:type" content="website"/>
+      <meta property="og:url" content="https://www.onedoq.com/"/>
+      <meta property="og:title" content="One Day One Question"/>
+      <meta property="og:image" content={utils.PublicUrl("images/icon.png")}/>
+      <meta name="twitter:card" content="summary_large_image"/>
+      <meta name="twitter:site" content="@aaronvasilev"/>
+      <meta name="twitter:title" content="One Day One Question"/>
+      <meta name="twitter:description" content="365 questions to track your life's progress and remember every meaningful moment."/>
+      <meta name="twitter:image" content={utils.PublicUrl("images/icon.png")}/>
+
       <script src="https://unpkg.com/htmx.org"></script>
-      <script src={publicUrl("index.js")}></script>
-      <!-- Google tag (gtag.js) -->
+      <script src={utils.PublicUrl("index.js")}></script>
+
       <script async src="https://www.googletagmanager.com/gtag/js?id=G-KBJ379JC17"></script>
       <script>
         window.dataLayer = window.dataLayer || [];
@@ -44,8 +56,8 @@ templ Layout(isLogin, showNav bool) {
         gtag('config', 'G-KBJ379JC17');
       </script>
 
-      <link rel="stylesheet" type="text/css" href={publicUrl("styles/global.css")}/>
-      <link rel="stylesheet" type="text/css" href={publicUrl("styles/out.css")}/>
+      <link rel="stylesheet" type="text/css" href={utils.PublicUrl("styles/out.css")}/>
+      <link rel="stylesheet" type="text/css" href={utils.PublicUrl("styles/global.css")}/>
       <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0ndXRmLTgnPz4KPG5zMDpzdmcgeG1sbnM6aHRtbD0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94aHRtbCIgeG1sbnM6bnMwPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjYwMCIgaGVpZ2h0PSI2MDAiIHZpZXdCb3g9IjAgMCA2MDAgNjAwIj4gICAgPG5zMDpmb3JlaWduT2JqZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHg9IjAiIHk9IjAiIGV4dGVybmFsUmVzb3VyY2VzUmVxdWlyZWQ9InRydWUiPiAgICAgICAgPGh0bWw6ZGl2IHN0eWxlPSJ3aWR0aDogNjAwcHg7IGhlaWdodDogNjAwcHg7IGRpc3BsYXk6IGZsZXg7IGFsaWduLWl0ZW1zOiBjZW50ZXI7IGp1c3RpZnktY29udGVudDogY2VudGVyOyBiYWNrZ3JvdW5kOiBsaW5lYXItZ3JhZGllbnQoOTBkZWcsIHJnYigxMTcsIDQ1LCA4OCkgMCUsIHJnYigxMjksIDk3LCAyNTUpIDEwMCUpOyBib3JkZXItcmFkaXVzOiA0MnB4OyI+ICAgICAgICAgICAgPG5zMDpzdmcgd2lkdGg9IjQ2MiIgaGVpZ2h0PSI0NjIiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2IoMjU1LCAyNTUsIDI1NSkiIHN0cm9rZS13aWR0aD0iMS4zMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4gICAgICAgICAgICAgICAgPG5zMDpwYXRoIGQ9Ik04IDIxaDEyYTIgMiAwIDAgMCAyLTJ2LTJIMTB2MmEyIDIgMCAxIDEtNCAwVjVhMiAyIDAgMSAwLTQgMHYzaDQiIC8+ICAgICAgICAgICAgICAgIDxuczA6cGF0aCBkPSJNMTkgMTdWNWEyIDIgMCAwIDAtMi0ySDQiIC8+ICAgICAgICAgICAgICAgIDxuczA6cGF0aCBkPSJNMTUgOGgtNSIgLz4gICAgICAgICAgICAgICAgPG5zMDpwYXRoIGQ9Ik0xNSAxMmgtNSIgLz4gICAgICAgICAgICA8L25zMDpzdmc+ICAgICAgICA8L2h0bWw6ZGl2PiAgICA8L25zMDpmb3JlaWduT2JqZWN0PjwvbnMwOnN2Zz4="/>
 
     </head>
@@ -54,7 +66,9 @@ templ Layout(isLogin, showNav bool) {
         class="py-3 px-4 mx-auto items-center flex h-fit bg-primary font-Lilita shadow-xl border-2 border-black"
       >
         <h1 class="red text-5xl">
-          One Day One Question
+          <a href={templ.SafeURL(homeLink())}>
+            One Day One Question
+          </a>
         </h1>
         <nav class="flex flex-col gap-3 justify-end md:flex-row">
         if showNav {
