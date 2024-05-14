@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+  "math/rand/v2"
 
 	"github.com/aaron-vasilev/diary-templ/src/auth"
 	"github.com/aaron-vasilev/diary-templ/src/components"
@@ -29,7 +30,7 @@ func ConnectRoutes(app *echo.Echo, db *sql.DB) {
     return c.String(http.StatusOK, "test")
   })
   app.GET("/*", func(c echo.Context) error {
-    return c.Redirect(http.StatusFound, "/login")
+    return c.Redirect(http.StatusFound, "/")
   })
 
 
@@ -158,4 +159,13 @@ func ConnectRoutes(app *echo.Echo, db *sql.DB) {
 
     return components.Question(question, user).Render(c.Request().Context(), c.Response())
   })
+
+  app.GET("/random-question", func(c echo.Context) error {
+    var question model.Question
+
+    question = controller.GetQuestion(db, rand.IntN(360-1) + 1)
+
+    return components.RandomQuestion(question).Render(c.Request().Context(), c.Response())
+  })
+
 }

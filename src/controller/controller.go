@@ -9,6 +9,16 @@ import (
 	"github.com/aaron-vasilev/diary-templ/src/utils"
 )
 
+func GetQuestion(db *sql.DB, id int) model.Question {
+  var q model.Question
+
+  query := `SELECT * FROM diary.question q WHERE q.id=$1;`
+
+  db.QueryRow(query, id).Scan(&q.Id, &q.Text, &q.ShownDate)
+
+  return q
+}
+
 func GetQuestionByDate(db *sql.DB, date string) model.Question {
   var q model.Question
   q.ShownDate = date

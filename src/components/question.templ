@@ -15,3 +15,12 @@ templ Question(q model.Question, u model.User) {
     <h2 class="pl-4 text-2xl">{q.Text}</h2>
   </div>
 }
+
+templ RandomQuestion(q model.Question) {
+  <h2 
+    id="question"
+    class="pl-4 text-2xl text-center"
+    >
+    {q.Text}
+  </h2>
+}

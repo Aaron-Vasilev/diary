@@ -4,8 +4,8 @@ import "github.com/aaron-vasilev/diary-templ/src/model"
 import "github.com/aaron-vasilev/diary-templ/src/components"
 import "time"
 
-templ QuestionList(isLogin bool, questions []model.Question) {
-  @components.Layout(isLogin, true) {
+templ QuestionList(questions []model.Question) {
+  @components.Layout(true, true) {
     <div class="mb-6">
       @components.Input("search", "#question-list", "Find a question...")
     </div>

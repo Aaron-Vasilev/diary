@@ -21,7 +21,15 @@ type HandlerCtx struct {
 }
 
 func (h HandlerCtx) Home(c echo.Context) error {
-  return pages.Home().Render(c.Request().Context(), c.Response())
+  question := controller.GetQuestionByDate(h.Db, "2023-08-05")
+
+  _, err := auth.GetUserClaimsFromCtx(c)
+
+  if err == nil { return c.Redirect(http.StatusFound, "/diary") }
+
+  return pages.Home(pages.HomeProps{
+    Question: question,
+  }).Render(c.Request().Context(), c.Response())
 }
 
 func (h HandlerCtx) QuestionListHandler(c echo.Context) error {
@@ -31,11 +39,10 @@ func (h HandlerCtx) QuestionListHandler(c echo.Context) error {
 
   if err != nil { return c.Redirect(http.StatusFound, "/login") }
 
-  return pages.QuestionList(true, questions).Render(c.Request().Context(), c.Response())
+  return pages.QuestionList(questions).Render(c.Request().Context(), c.Response())
 }
 
 func (h HandlerCtx) Diary(c echo.Context) error {
-  isLogin := false
   var question model.Question
   var notes  []model.Note
   user := model.User{
@@ -52,16 +59,14 @@ func (h HandlerCtx) Diary(c echo.Context) error {
   }
 
   userClaims, err := auth.GetUserClaimsFromCtx(c)
+
+  if err != nil { return c.Redirect(http.StatusFound, "/login") }
   
   question = controller.GetQuestionByDate(h.Db, question.ShownDate)
-  if err == nil {
-    isLogin = true
-    user = controller.GetUserByEmail(h.Db, userClaims.Email)
-    notes = controller.GetNotes(h.Db, user.Id, question.Id)
-  }
+  user = controller.GetUserByEmail(h.Db, userClaims.Email)
+  notes = controller.GetNotes(h.Db, user.Id, question.Id)
 
   return pages.Diary(components.DiaryProps{
-    IsLogin: isLogin,
     User: user,
     Question: question,
     Notes: notes,

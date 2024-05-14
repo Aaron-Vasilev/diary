@@ -38,23 +38,25 @@ templ Layout(isLogin, showNav bool) {
       <meta property="og:type" content="website"/>
       <meta property="og:url" content="https://www.onedoq.com/"/>
       <meta property="og:title" content="One Day One Question"/>
-      <meta property="og:image" content={utils.PublicUrl("images/icon.png")}/>
       <meta name="twitter:card" content="summary_large_image"/>
       <meta name="twitter:site" content="@aaronvasilev"/>
       <meta name="twitter:title" content="One Day One Question"/>
       <meta name="twitter:description" content="365 questions to track your life's progress and remember every meaningful moment."/>
       <meta name="twitter:image" content={utils.PublicUrl("images/icon.png")}/>
+      <meta property="og:image" content={utils.PublicUrl("images/icon.png")}/>
 
       <script src="https://unpkg.com/htmx.org"></script>
       <script src={utils.PublicUrl("index.js")}></script>
 
-      <script async src="https://www.googletagmanager.com/gtag/js?id=G-KBJ379JC17"></script>
-      <script>
-        window.dataLayer = window.dataLayer || [];
+      if utils.IsProd() {
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-KBJ379JC17"></script>
+          <script>
+          window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
         gtag('config', 'G-KBJ379JC17');
-      </script>
+        </script>
+      }
 
       <link rel="stylesheet" type="text/css" href={utils.PublicUrl("styles/out.css")}/>
       <link rel="stylesheet" type="text/css" href={utils.PublicUrl("styles/global.css")}/>
@@ -70,7 +72,7 @@ templ Layout(isLogin, showNav bool) {
             One Day One Question
           </a>
         </h1>
-        <nav class="flex flex-col gap-3 justify-end md:flex-row">
+        <nav class="flex flex-col gap-3 justify-end md:flex-row md:ml-[-95px] ml-0">
         if showNav {
           if isLogin {
             <a

@@ -2,38 +2,44 @@ package pages
 
 import "github.com/aaron-vasilev/diary-templ/src/components"
 import "github.com/aaron-vasilev/diary-templ/src/utils"
+import "github.com/aaron-vasilev/diary-templ/src/model"
 
-templ Home() {
-  @components.Layout(false, false) {
-    <div class="flex flex-col items-center">
-      <div class="py-4 w-[80%]">
+type HomeProps struct {
+  Question model.Question
+}
+
+templ Home(props HomeProps) {
+  @components.Layout(false, true) {
+    <div class="px-[10%]">
+      <form
+        class="flex flex-col justify-between items-center min-h-32"
+        hx-get="/random-question"
+        hx-swap="outerHTML"
+        hx-target="#question"
+      >
+        <div class="flex items-center grow">
+          @components.RandomQuestion(props.Question)
+        </div>
+        @components.Button(components.DummyClick(), "See a random question", 'M', components.PRIMARY)
+      </form>
+      <div class="py-4">
         <div class="text-center">
-          <img
-            alt="star"
-            src={utils.PublicUrl("images/star.svg")}
-           />
-          <img
-            alt="star"
-            src={utils.PublicUrl("images/star.svg")}
-           />
-          <img
-            alt="star"
-            src={utils.PublicUrl("images/star.svg")}
-           />
-          <img
-            alt="star"
-            src={utils.PublicUrl("images/star.svg")}
-           />
-          <img
-            alt="star"
-            src={utils.PublicUrl("images/star.svg")}
-           />
+          for range [5] int{} {
+            <img
+              alt="star"
+              src={utils.PublicUrl("images/star.svg")}
+            />
+          }
         </div>
         <p class="text-center my-4">
+          This is the great instrument to see my 
           <span class="bg-primary">
-            This is the great instrument to see my growth, professionally and personally.
+            growth, professionally and personally.
           </span>
-          It helps me to feel happier. I love it and highly recommend to everyone. It takes a lot of discipline to take notes every day, but it worth it 100%. 
+          It helps me to feel happier. I love it and highly recommend to everyone. It takes a lot of discipline to take notes every day, but 
+          <span class="bg-primary">
+            it worth it 100%. 
+          </span>
         </p>
         <div class="flex justify-center gap-2">
           <div>
