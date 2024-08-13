@@ -104,7 +104,7 @@ func GetQuestions(db *sql.DB) []model.Question {
 
 func GetQuestionsLike(db *sql.DB, search string) []model.Question {
   var questions []model.Question
-  query := `SELECT * FROM diary.question q WHERE q.text LIKE $1 ORDER BY shown_date ASC;`
+  query := `SELECT * FROM diary.question q WHERE q.text ILIKE $1 ORDER BY shown_date ASC;`
 
   rows, err := db.Query(query, "%" + search + "%")
 
