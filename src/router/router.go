@@ -24,7 +24,7 @@ func ConnectRoutes(app *echo.Echo, db *sql.DB) {
 	app.GET("/update-question", handler.HandlerCtx{Db: db}.UpdateQuestion)
 
 	app.GET("/auth/login", handler.HandlerCtx{Db: db}.Login)
-	app.GET("/auth/callback", handler.HandlerCtx{Db: db}.AuthCallback)
+	app.GET("/auth/callback", handler.HandlerCtx{Db: db}.AuthCallback) // for Google
 	app.GET("/test", func(c echo.Context) error {
 		fmt.Println("✡️  line 24 test")
 		return c.String(http.StatusOK, "test")
@@ -124,7 +124,7 @@ func ConnectRoutes(app *echo.Echo, db *sql.DB) {
 		userClaims, err := auth.GetUserClaimsFromCtx(c)
 
 		if err == nil {
-			user = controller.GetUserByEmail(db, userClaims.Email)
+			user, err = controller.GetUserByEmail(db, userClaims.Email)
 			notes = controller.GetNotes(db, user.Id, question.Id)
 		}
 

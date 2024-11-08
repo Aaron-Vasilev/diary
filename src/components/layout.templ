@@ -1,7 +1,9 @@
 package components
 
-import "github.com/aaron-vasilev/diary/src/utils"
-import "os"
+import (
+	"github.com/aaron-vasilev/diary/src/utils"
+	"os"
+)
 
 func homeLink() string {
 	return os.Getenv("BASE_URL")

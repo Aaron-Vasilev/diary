@@ -69,7 +69,7 @@ func (h HandlerCtx) Diary(c echo.Context) error {
 	}
 
 	question = controller.GetQuestionByDate(h.Db, question.ShownDate)
-	user = controller.GetUserByEmail(h.Db, userClaims.Email)
+	user, err = controller.GetUserByEmail(h.Db, userClaims.Email)
 	notes = controller.GetNotes(h.Db, user.Id, question.Id)
 
 	return pages.Diary(components.DiaryProps{
@@ -98,8 +98,52 @@ func (h HandlerCtx) LoginPage(c echo.Context) error {
 }
 
 func (h HandlerCtx) Login(ctx echo.Context) error {
-	gothic.BeginAuthHandler(ctx.Response().Writer, ctx.Request())
-	return nil
+	email := ctx.FormValue("email")
+	password := ctx.FormValue("password")
+
+	user, err := controller.GetUserByEmail(h.Db, email)
+
+	if err != nil {
+		return err
+	}
+
+	if user.Password == nil {
+		return nil
+	}
+
+	isValidPassword := auth.CheckPassword(password, *user.Password)
+
+	if !isValidPassword {
+		return nil
+	}
+
+	token, err := auth.EncodeJWT(user)
+
+	if err != nil {
+		return nil
+	}
+
+	cookie := new(http.Cookie)
+	cookie.Name = utils.TOKEN
+	cookie.Value = token
+	cookie.Path = "/"
+	ctx.SetCookie(cookie)
+
+	return ctx.Redirect(http.StatusFound, "/diary")
+}
+
+func (h HandlerCtx) Register(ctx echo.Context) error {
+	email := ctx.FormValue("email")
+	password := ctx.FormValue("password")
+	name := ctx.FormValue("name")
+
+	_, err := controller.CreateUser(h.Db, email, password, name)
+
+	if err != nil {
+		return nil
+	}
+
+	return ctx.Redirect(http.StatusFound, "/diary")
 }
 
 type contextKey string
@@ -113,7 +157,7 @@ func (h HandlerCtx) AuthCallback(c echo.Context) error {
 		return c.Redirect(http.StatusFound, "/login")
 	}
 
-	user := controller.GetUserByEmail(h.Db, googleUser.Email)
+	user, err := controller.GetUserByEmail(h.Db, googleUser.Email)
 	token, err := auth.EncodeJWT(user)
 
 	if err != nil {

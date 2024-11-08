@@ -10,6 +10,7 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo/v4"
 	"github.com/markbates/goth"
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/markbates/goth/gothic"
 	"github.com/markbates/goth/providers/google"
@@ -83,4 +84,19 @@ func GetUserClaimsFromCtx(c echo.Context) (*UserClaims, error) {
 	}
 
 	return userClaim, nil
+}
+
+func HashPassword(password string) (string, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+
+	if err != nil {
+		return "", err
+	}
+
+	return string(hash), nil
+}
+
+func CheckPassword(password string, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }

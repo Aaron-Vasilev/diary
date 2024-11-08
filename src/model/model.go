@@ -13,8 +13,9 @@ type User struct {
 	Email      string
 	Name       string
 	Role       Role
-	SubId      string
+	SubId      *string
 	Subscribed bool
+	Password   *string
 }
 
 type Question struct {

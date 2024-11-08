@@ -1,0 +1,24 @@
+package pages
+
+import "github.com/aaron-vasilev/diary/src/components"
+
+templ Login() {
+	@components.Layout(false, false) {
+		<div class="flex justify-center">
+			<form
+				hx-get="/auth/login"
+				class="flex flex-col gap-2 text-3xl border-sky-400 font-Lilita text-center"
+			>
+				<label>
+					Email
+					<input name="email"/>
+				</label>
+				<label>
+					Password
+					<input name="password" type="password"/>
+				</label>
+				<button type="submit">Sing in</button>
+			</form>
+		</div>
+	}
+}

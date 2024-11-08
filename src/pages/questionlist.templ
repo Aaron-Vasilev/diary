@@ -1,8 +1,10 @@
 package pages
 
-import "github.com/aaron-vasilev/diary/src/model"
-import "github.com/aaron-vasilev/diary/src/components"
-import "time"
+import (
+	"github.com/aaron-vasilev/diary/src/components"
+	"github.com/aaron-vasilev/diary/src/model"
+	"time"
+)
 
 templ QuestionList(questions []model.Question) {
 	@components.Layout(true, true) {

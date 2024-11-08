@@ -1,8 +1,10 @@
 package components
 
-import "github.com/aaron-vasilev/diary/src/model"
-import "github.com/aaron-vasilev/diary/src/utils"
-import "strconv"
+import (
+	"github.com/aaron-vasilev/diary/src/model"
+	"github.com/aaron-vasilev/diary/src/utils"
+	"strconv"
+)
 
 func actionsUrl(id int) string {
 	return "/note/" + strconv.Itoa(id)

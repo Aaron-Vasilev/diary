@@ -1,13 +1,13 @@
-const TOKEN = 'token'
+const NOTE = 'note'
 
 document.addEventListener('htmx:load', function(event) {
   const node = event.detail.elt
   const parentId = node.parentElement.id
-  const noteFromStoratge = localStorage.getItem(TOKEN)
+  const noteFromStoratge = localStorage.getItem(NOTE)
 
   if (parentId === 'note-list') {
     document.querySelector('textarea').value = ''
-    localStorage.clear(TOKEN)
+    localStorage.clear(NOTE)
 
     const placeholder = document.querySelector('#note-list-placeholder')
     if (placeholder) placeholder.style = "display: none;"
@@ -30,8 +30,8 @@ document.addEventListener('htmx:beforeSend', function(event) {
   }
 })
 
-function saveLocally(value) {
-  localStorage.setItem(TOKEN, value)
+function saveLocally(key, value) {
+  localStorage.setItem(key, value)
 }
 
 function debounce(func, delay = 300) {
@@ -45,7 +45,7 @@ function debounce(func, delay = 300) {
   }
 }
 
-const debouncedSave = debounce(saveLocally)
+const debouncedSaveLocalStorate = debounce(saveLocally)
 
 function setDaysToCalendar(dif) {
   const calendar = document.getElementById('calendar')

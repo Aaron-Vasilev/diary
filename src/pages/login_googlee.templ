@@ -1,7 +1,9 @@
 package pages
 
-import "github.com/aaron-vasilev/diary/src/components"
-import "os"
+import (
+	"github.com/aaron-vasilev/diary/src/components"
+	"os"
+)
 
 func loginLink() string {
 	return os.Getenv("BASE_URL") + "auth/login?provider=google"
@@ -11,7 +13,7 @@ func diaryLink() string {
 	return os.Getenv("BASE_URL") + "diary"
 }
 
-templ Login() {
+templ LoginGoogle() {
 	@components.Layout(false, false) {
 		<div class="flex justify-center">
 			<div class="flex flex-col gap-2 text-3xl border-sky-400 font-Lilita text-white text-center">

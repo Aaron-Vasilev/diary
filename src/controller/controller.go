@@ -50,7 +50,9 @@ func GetUserById(db *sql.DB, id int) model.User {
 		&u.Name,
 		&u.Role,
 		&u.SubId,
-		&u.Subscribed)
+		&u.Subscribed,
+		&u.Password,
+	)
 
 	if row == sql.ErrNoRows {
 		fmt.Println("No question with that id")
@@ -59,10 +61,28 @@ func GetUserById(db *sql.DB, id int) model.User {
 	return u
 }
 
-func GetUserByEmail(db *sql.DB, email string) model.User {
+func GetUserByEmail(db *sql.DB, email string) (model.User, error) {
 	var u model.User
 	query := `SELECT * FROM diary.user u WHERE u.email=$1;`
-	row := db.QueryRow(query, email).Scan(
+	err := db.QueryRow(query, email).Scan(
+		&u.Id,
+		&u.CreatedAt,
+		&u.Email,
+		&u.Name,
+		&u.Role,
+		&u.SubId,
+		&u.Subscribed,
+		&u.Password,
+	)
+
+	return u, err
+}
+
+func CreateUser(db *sql.DB, email, password, name string) (model.User, error) {
+	var u model.User
+	query := `INSERT INTO diary.user (email, password, name) VALUES($1, $2, $3) RETURNING *;`
+
+	err := db.QueryRow(query, email).Scan(
 		&u.Id,
 		&u.CreatedAt,
 		&u.Email,
@@ -70,12 +90,7 @@ func GetUserByEmail(db *sql.DB, email string) model.User {
 		&u.Role,
 		&u.SubId,
 		&u.Subscribed)
-
-	if row == sql.ErrNoRows {
-		fmt.Println("No question with that email")
-	}
-
-	return u
+	return u, err
 }
 
 func GetQuestions(db *sql.DB) []model.Question {
