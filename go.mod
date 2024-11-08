@@ -1,9 +1,10 @@
-module github.com/aaron-vasilev/diary-templ
+module github.com/aaron-vasilev/diary
 
 go 1.21.6
 
 require (
 	github.com/a-h/templ v0.2.598
+	github.com/akrylysov/algnhsa v1.1.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/gorilla/sessions v1.2.2
 	github.com/joho/godotenv v1.5.1
@@ -16,7 +17,6 @@ require (
 require (
 	cloud.google.com/go/compute v1.20.1 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
-	github.com/akrylysov/algnhsa v1.1.0 // indirect
 	github.com/aws/aws-lambda-go v1.43.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/gorilla/context v1.1.1 // indirect

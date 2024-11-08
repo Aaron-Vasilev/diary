@@ -7,9 +7,9 @@ import (
 
 	"database/sql"
 
-	"github.com/aaron-vasilev/diary-templ/src/auth"
-	"github.com/aaron-vasilev/diary-templ/src/router"
-	"github.com/aaron-vasilev/diary-templ/src/utils"
+	"github.com/aaron-vasilev/diary/src/auth"
+	"github.com/aaron-vasilev/diary/src/router"
+	"github.com/aaron-vasilev/diary/src/utils"
 	"github.com/akrylysov/algnhsa"
 	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"

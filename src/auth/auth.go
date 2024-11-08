@@ -4,8 +4,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/aaron-vasilev/diary-templ/src/model"
-	"github.com/aaron-vasilev/diary-templ/src/utils"
+	"github.com/aaron-vasilev/diary/src/model"
+	"github.com/aaron-vasilev/diary/src/utils"
 	"github.com/golang-jwt/jwt"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo/v4"

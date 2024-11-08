@@ -6,12 +6,12 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/aaron-vasilev/diary-templ/src/auth"
-	"github.com/aaron-vasilev/diary-templ/src/components"
-	"github.com/aaron-vasilev/diary-templ/src/controller"
-	"github.com/aaron-vasilev/diary-templ/src/model"
-	"github.com/aaron-vasilev/diary-templ/src/pages"
-	"github.com/aaron-vasilev/diary-templ/src/utils"
+	"github.com/aaron-vasilev/diary/src/auth"
+	"github.com/aaron-vasilev/diary/src/components"
+	"github.com/aaron-vasilev/diary/src/controller"
+	"github.com/aaron-vasilev/diary/src/model"
+	"github.com/aaron-vasilev/diary/src/pages"
+	"github.com/aaron-vasilev/diary/src/utils"
 	"github.com/labstack/echo/v4"
 	"github.com/markbates/goth/gothic"
 )
