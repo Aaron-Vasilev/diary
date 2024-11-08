@@ -3,14 +3,14 @@ package components
 import "github.com/aaron-vasilev/diary/src/model"
 
 type DiaryProps struct {
-  User model.User
-  Question model.Question
-  Notes []model.Note
+	User     model.User
+	Question model.Question
+	Notes    []model.Note
 }
 
 templ Diary(props DiaryProps) {
-  @Calendar("/change-date", "#diary", props.Question.ShownDate)
-  @Question(props.Question, props.User)
-  @NoteList(props.Notes)
-  @CreateNote(props.Question)
+	@Calendar("/change-date", "#diary", props.Question.ShownDate)
+	@Question(props.Question, props.User)
+	@NoteList(props.Notes)
+	@CreateNote(props.Question)
 }

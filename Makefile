@@ -4,3 +4,4 @@ run:
 	 @go build -o ./tmp/main ./src/main.go
 format:
 	@gofmt -w .
+	@templ fmt .

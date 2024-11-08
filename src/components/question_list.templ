@@ -4,29 +4,31 @@ import "github.com/aaron-vasilev/diary/src/model"
 import "time"
 
 templ QuestionList(questions []model.Question) {
-  <ul id="question-list">
-    for _, q := range questions {
-      @question(q)
-    }
-  </ul>
+	<ul id="question-list">
+		for _, q := range questions {
+			@question(q)
+		}
+	</ul>
 }
 
 func dateWithoutYear(dateStr string) string {
 	date, err := time.Parse("2006-01-02", dateStr)
 
-	if err != nil { return dateStr }
+	if err != nil {
+		return dateStr
+	}
 
 	return date.Format("2 January")
 }
 
 templ question(q model.Question) {
-  <li class="text-lg border-b-2 border-black border-solid mb-2 p-1">
-     <h3 class="underline decoration-dashed underline-offset-4">
-       <span class="mr-1">
-         Date: 
-       </span>
-       {dateWithoutYear(q.ShownDate)}
-     </h3>
-    <h2 class="pl-1">{q.Text}</h2>
-  </li>
+	<li class="text-lg border-b-2 border-black border-solid mb-2 p-1">
+		<h3 class="underline decoration-dashed underline-offset-4">
+			<span class="mr-1">
+				Date: 
+			</span>
+			{ dateWithoutYear(q.ShownDate) }
+		</h3>
+		<h2 class="pl-1">{ q.Text }</h2>
+	</li>
 }

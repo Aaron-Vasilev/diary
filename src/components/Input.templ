@@ -1,13 +1,13 @@
 package components
 
 templ Input(inputType, target, placeholder string) {
-  <input 
-    class="outline-[#8161ff] min-h-7 bg-transparent w-full text-xl p-2 border-solid shadow-xl border-black border-2"
-    name="search"
-    placeholder={placeholder}
-    type={inputType}
-    hx-post="/question-search"
-    hx-trigger="input change delay:500ms, search"
-    hx-target={target}
-  />
+	<input
+		class="outline-[#8161ff] min-h-7 bg-transparent w-full text-xl p-2 border-solid shadow-xl border-black border-2"
+		name="search"
+		placeholder={ placeholder }
+		type={ inputType }
+		hx-post="/question-search"
+		hx-trigger="input change delay:500ms, search"
+		hx-target={ target }
+	/>
 }

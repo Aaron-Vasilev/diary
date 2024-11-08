@@ -4,50 +4,48 @@ type sizeType rune
 type btnType string
 
 const (
-  S sizeType = 'S'
-  M sizeType = 'M'
-  L sizeType = 'L'
-  PRIMARY   btnType = "primary"
-  SECONDARY btnType = "secondary"
+	S         sizeType = 'S'
+	M         sizeType = 'M'
+	L         sizeType = 'L'
+	PRIMARY   btnType  = "primary"
+	SECONDARY btnType  = "secondary"
 )
 
 func sizeClass(size sizeType) string {
-  var class string
+	var class string
 
-  if size == 'S' {
-    class = "h-8 min-w-[7rem] text-xl"
-  } else if size == 'M' {
-    class = "h-14 min-w-24 text-3xl"
-  } else if size == 'L' {
-    class = "h-18 min-w-32 text-5xl"
-  } 
+	if size == 'S' {
+		class = "h-8 min-w-[7rem] text-xl"
+	} else if size == 'M' {
+		class = "h-14 min-w-24 text-3xl"
+	} else if size == 'L' {
+		class = "h-18 min-w-32 text-5xl"
+	}
 
-  return class
+	return class
 }
 
 func typeClass(t btnType) string {
-  var class string
+	var class string
 
-  if t == PRIMARY {
-    class = "bg-secondary"
-  } else {
-    class = "bg-tri"
-  } 
+	if t == PRIMARY {
+		class = "bg-secondary"
+	} else {
+		class = "bg-tri"
+	}
 
-  return class
+	return class
 }
 
 templ Button(onclick templ.ComponentScript, label string, size sizeType, btnType btnType) {
-  <button
-    onclick={onclick}
-    class={
-      sizeClass(size),
+	<button
+		onclick={ onclick }
+		class={ sizeClass(size),
       typeClass(btnType),
-      "px-2 border-2 border-black font-Lilita text-white shadow-m outline-primary"
-    }
-  >
-    {label}
-  </button>
+      "px-2 border-2 border-black font-Lilita text-white shadow-m outline-primary" }
+	>
+		{ label }
+	</button>
 }
 
 script DummyClick() {

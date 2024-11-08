@@ -5,68 +5,68 @@ import "github.com/aaron-vasilev/diary/src/utils"
 import "strconv"
 
 func actionsUrl(id int) string {
-  return "/note/" + strconv.Itoa(id)
+	return "/note/" + strconv.Itoa(id)
 }
 
 func noteId(id int) string {
-  return "note-" + strconv.Itoa(id)
+	return "note-" + strconv.Itoa(id)
 }
 
 func elementText(id int) string {
-  str := "js:{text: document.getElementById('note-" + strconv.Itoa(id) + "').lastChild.innerText }"
-  return str
+	str := "js:{text: document.getElementById('note-" + strconv.Itoa(id) + "').lastChild.innerText }"
+	return str
 }
 
 templ NoteList(notes []model.Note) {
-  <div class="md:col-span-2">
-    <h3 class="mb-4 text-xl underline underline-offset-4">Note History:</h3>
-    <div 
-      class="grid gap-4"
-      id="note-list" 
-    >
-      if len(notes) == 0 {
-        <h2 class="px-4 text-xl" id="note-list-placeholder">
-          You don&apos;t have any notes... Yet 🐣
-        </h2>
-      } else {
-         for _, note := range notes {
-           @Note(note)
-         }
-      }
-    </div>
-  </div>
+	<div class="md:col-span-2">
+		<h3 class="mb-4 text-xl underline underline-offset-4">Note History:</h3>
+		<div
+			class="grid gap-4"
+			id="note-list"
+		>
+			if len(notes) == 0 {
+				<h2 class="px-4 text-xl" id="note-list-placeholder">
+					You don&apos;t have any notes... Yet 🐣
+				</h2>
+			} else {
+				for _, note := range notes {
+					@Note(note)
+				}
+			}
+		</div>
+	</div>
 }
 
 templ noteSkeleton(note model.Note, editable string) {
-  <div 
-    id={noteId(note.Id)}
-    class="whitespace-pre-line border-8 border-solid border-primary p-2 shadow-xl"
-  >
-    <div class="flex justify-between">
-      <h2 class="font-Lilita text-lg underline decoration-dashed underline-offset-4">
-        <span class="mr-1 text-2xl">
-          Date:
-        </span>
-        {note.CreatedDate}
-      </h2>
-      {children...}
-    </div>
-    <p class="p-2 outline-none" contenteditable={editable}>
-      {note.Text}
-    </p>
-  </div>
+	<div
+		id={ noteId(note.Id) }
+		class="whitespace-pre-line border-8 border-solid border-primary p-2 shadow-xl"
+	>
+		<div class="flex justify-between">
+			<h2 class="font-Lilita text-lg underline decoration-dashed underline-offset-4">
+				<span class="mr-1 text-2xl">
+					Date:
+				</span>
+				{ note.CreatedDate }
+			</h2>
+			{ children... }
+		</div>
+		<p class="p-2 outline-none" contenteditable={ editable }>
+			{ note.Text }
+		</p>
+	</div>
 }
 
 templ Note(n model.Note) {
-  @noteSkeleton(n, "false") {
-    @actions(n.Id, n.Text)
-  }
+	@noteSkeleton(n, "false") {
+		@actions(n.Id, n.Text)
+	}
 }
 
 templ EditNote(n model.Note) {
-  @noteSkeleton(n, "true") {
-    @editActions(n.Id)
-  }
+	@noteSkeleton(n, "true") {
+		@editActions(n.Id)
+	}
 }
 
 script closeDialog(id int) {
@@ -78,7 +78,7 @@ script openDialog(id int) {
 }
 
 templ actions(id int, text string) {
-  <style type="text/css">
+	<style type="text/css">
     dialog {
       background-image: linear-gradient(to bottom right, rgba(255, 255, 232, 1), rgba(255, 178, 230, 0.3));
       border: 2px solid black;
@@ -90,65 +90,65 @@ templ actions(id int, text string) {
       padding: 0.25rem;
     }
   </style>
-  <div class="flex gap-2 w-[66px]">
-    <img
-      class="cursor-pointer"
-      hx-put={actionsUrl(id)}
-      hx-target={"#" + noteId(id)}
-      hx-swap="outerHTML"
-      alt="edit icon"
-      src={utils.PublicUrl("images/edit.svg")}
-    />
-    <img
-      class="cursor-pointer"
-      alt="delete icon"
-      onclick={openDialog(id)}
-      src={utils.PublicUrl("images/delete.svg")}
-    />
-  </div>
-  <dialog
-    id={"dialog-" + intToStr(id)}
-    class="p-6 min-h-[30vh] min-w-[50vw] backdrop:bg-neutral-200 backdrop:opacity-75 shadow-xl"
-  >
-    <div class="grid gap-4">
-      <h2 class="font-Lilita text-2xl text-center">
-        Do I really want to delete the note?
-      </h2>
-      <p>
-      {text}
-      </p>
-      <div class="flex justify-center gap-4">
-        <form 
-          hx-delete={actionsUrl(id)}
-          hx-swap="delete"
-          hx-target={"#" + noteId(id)}
-        >
-          @Button(closeDialog(id), "Yes", 'M', "primary")
-        </form>
-        @Button(closeDialog(id), "No", 'M', "primary")
-      </div>
-    </div>
-  </dialog>
+	<div class="flex gap-2 w-[66px]">
+		<img
+			class="cursor-pointer"
+			hx-put={ actionsUrl(id) }
+			hx-target={ "#" + noteId(id) }
+			hx-swap="outerHTML"
+			alt="edit icon"
+			src={ utils.PublicUrl("images/edit.svg") }
+		/>
+		<img
+			class="cursor-pointer"
+			alt="delete icon"
+			onclick={ openDialog(id) }
+			src={ utils.PublicUrl("images/delete.svg") }
+		/>
+	</div>
+	<dialog
+		id={ "dialog-" + intToStr(id) }
+		class="p-6 min-h-[30vh] min-w-[50vw] backdrop:bg-neutral-200 backdrop:opacity-75 shadow-xl"
+	>
+		<div class="grid gap-4">
+			<h2 class="font-Lilita text-2xl text-center">
+				Do I really want to delete the note?
+			</h2>
+			<p>
+				{ text }
+			</p>
+			<div class="flex justify-center gap-4">
+				<form
+					hx-delete={ actionsUrl(id) }
+					hx-swap="delete"
+					hx-target={ "#" + noteId(id) }
+				>
+					@Button(closeDialog(id), "Yes", 'M', "primary")
+				</form>
+				@Button(closeDialog(id), "No", 'M', "primary")
+			</div>
+		</div>
+	</dialog>
 }
 
 templ editActions(id int) {
-  <div class="flex gap-2">
-    <img 
-      class="cursor-pointer"
-      hx-put={actionsUrl(id)}
-      hx-target={"#" + noteId(id)}
-      hx-swap="outerHTML"
-      hx-vals={elementText(id)}
-      alt="accept icon"
-      src={utils.PublicUrl("images/accept.svg")}
-    />
-    <img 
-      class="cursor-pointer"
-      hx-get={actionsUrl(id)}
-      hx-target={"#" + noteId(id)}
-      hx-swap="outerHTML"
-      alt="accept icon"
-      src={utils.PublicUrl("images/decline.svg")}
-    />
-  </div>
+	<div class="flex gap-2">
+		<img
+			class="cursor-pointer"
+			hx-put={ actionsUrl(id) }
+			hx-target={ "#" + noteId(id) }
+			hx-swap="outerHTML"
+			hx-vals={ elementText(id) }
+			alt="accept icon"
+			src={ utils.PublicUrl("images/accept.svg") }
+		/>
+		<img
+			class="cursor-pointer"
+			hx-get={ actionsUrl(id) }
+			hx-target={ "#" + noteId(id) }
+			hx-swap="outerHTML"
+			alt="accept icon"
+			src={ utils.PublicUrl("images/decline.svg") }
+		/>
+	</div>
 }

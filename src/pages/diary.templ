@@ -3,12 +3,12 @@ package pages
 import "github.com/aaron-vasilev/diary/src/components"
 
 templ Diary(props components.DiaryProps) {
-  @components.Layout(true, true) {
-    <div
-      id="diary"
-      class="grid grid-cols-1 md:grid-cols-2 gap-4"
-    >
-      @components.Diary(props)
-    </div>
-  }
+	@components.Layout(true, true) {
+		<div
+			id="diary"
+			class="grid grid-cols-1 md:grid-cols-2 gap-4"
+		>
+			@components.Diary(props)
+		</div>
+	}
 }

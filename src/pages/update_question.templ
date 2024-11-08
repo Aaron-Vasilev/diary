@@ -5,27 +5,27 @@ import "github.com/aaron-vasilev/diary/src/model"
 import "github.com/aaron-vasilev/diary/src/utils"
 
 type UpdateQuestionProps struct {
-  Question model.Question
-  User     model.User
+	Question model.Question
+	User     model.User
 }
 
 templ UpdateQuestion(props UpdateQuestionProps) {
-  @components.Layout(true, true) {
-    <div class="flex justify-between">
-      @components.Question(props.Question, props.User)
-      @components.Calendar("/update-question", "#question", props.Question.ShownDate)
-    </div>
-    <form
-      class="mt-8"
-      hx-put={"/update-question?id=" + utils.Int(props.Question.Id)}
-      hx-swap="outerHTML"
-      hx-target="#question"
-    >
-      <textarea
-        class="w-full h-fit border-8 border-solid border-primary bg-transparent p-4 shadow-xl outline-none" 
-        name="question"
-      />
-      @components.Button(components.DummyClick(), "Change", 'M', components.PRIMARY)
-    </form>
-  }
+	@components.Layout(true, true) {
+		<div class="flex justify-between">
+			@components.Question(props.Question, props.User)
+			@components.Calendar("/update-question", "#question", props.Question.ShownDate)
+		</div>
+		<form
+			class="mt-8"
+			hx-put={ "/update-question?id=" + utils.Int(props.Question.Id) }
+			hx-swap="outerHTML"
+			hx-target="#question"
+		>
+			<textarea
+				class="w-full h-fit border-8 border-solid border-primary bg-transparent p-4 shadow-xl outline-none"
+				name="question"
+			></textarea>
+			@components.Button(components.DummyClick(), "Change", 'M', components.PRIMARY)
+		</form>
+	}
 }
