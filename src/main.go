@@ -19,48 +19,48 @@ import (
 )
 
 func main() {
-  loadEnv()
-  PORT := os.Getenv("PORT")
-  app := echo.New()
-  db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	loadEnv()
+	PORT := os.Getenv("PORT")
+	app := echo.New()
+	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
 
-  if err = db.Ping(); err != nil {
-    log.Fatal("Error connecting to db", err)
-  }
-  defer db.Close()
+	if err = db.Ping(); err != nil {
+		log.Fatal("Error connecting to db", err)
+	}
+	defer db.Close()
 
-  auth.NewAuth()
-  app.Use(session.Middleware(sessions.NewCookieStore([]byte("secret"))))
+	auth.NewAuth()
+	app.Use(session.Middleware(sessions.NewCookieStore([]byte("secret"))))
 
-  router.ConnectRoutes(app, db)
+	router.ConnectRoutes(app, db)
 
-  if utils.IsProd() {
-    app.Use(middleware)
-    algnhsa.ListenAndServe(app, nil)
-  } else {
-    app.Static("public/", "public/")
-    fmt.Printf("Server started at localhost%s\n", PORT)
+	if utils.IsProd() {
+		app.Use(middleware)
+		algnhsa.ListenAndServe(app, nil)
+	} else {
+		app.Static("public/", "public/")
+		fmt.Printf("Server started at localhost%s\n", PORT)
 
-    err = app.Start(PORT)
-    log.Fatal("† line 33 err", err)
-  }
+		err = app.Start(PORT)
+		log.Fatal("† line 33 err", err)
+	}
 }
 
 func loadEnv() {
-  env := os.Getenv("ENV")
+	env := os.Getenv("ENV")
 
-  if env == "" { 
-    err := godotenv.Load()
+	if env == "" {
+		err := godotenv.Load()
 
-    if err != nil {
-      log.Fatal("No .env")
-    }
-  }
+		if err != nil {
+			log.Fatal("No .env")
+		}
+	}
 }
 
 func middleware(next echo.HandlerFunc) echo.HandlerFunc {
-  return func(c echo.Context) error {
-    c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTMLCharsetUTF8)
-    return next(c)
-  }
+	return func(c echo.Context) error {
+		c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTMLCharsetUTF8)
+		return next(c)
+	}
 }
