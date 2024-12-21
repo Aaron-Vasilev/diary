@@ -1,6 +1,8 @@
 run:
-	 @templ generate
-	 @go build -o ./tmp/main ./src/main.go
+	@templ generate
+	@go build -o ./tmp/main ./src/main.go
+build:
+	@go build -o ./tmp/main ./src/main.go
 dev:
 	@npx concurrently "air" "npx tailwindcss -o ./public/styles/out.css --watch"
 format:
@@ -9,10 +11,12 @@ format:
 start:
 	@supervisord -c ./supervisord.conf
 launch:
-	@sudo supervisorctl shutdown
-	@go build -o ./tmp/bot ./main.go
+	@go build -o ./tmp/main ./src/main.go
+	@templ generate
 	@echo Build ends
-	@sudo supervisord -c ./supervisord.conf
+	@sudo supervisorctl restart diary
 	@echo Started
+restart:
+	@sudo supervisorctl restart diary
 stop:
 	@supervisorctl shutdown

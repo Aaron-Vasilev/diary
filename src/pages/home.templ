@@ -15,7 +15,7 @@ templ Home(props HomeProps) {
 		<div class="px-[10%]">
 			<form
 				class="flex flex-col justify-between items-center min-h-32"
-				hx-get={components.Url("/random-question")}
+				hx-get={ components.Url("/random-question") }
 				hx-swap="outerHTML"
 				hx-target="#question"
 			>

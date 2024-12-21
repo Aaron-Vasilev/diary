@@ -6,7 +6,7 @@ templ Login() {
 	@components.Layout(false, false) {
 		<div class="flex justify-center">
 			<form
-				hx-get={components.Url("/auth/login")}
+				hx-get={ components.Url("/auth/login") }
 				class="flex flex-col gap-2 text-3xl border-sky-400 font-Lilita text-center"
 			>
 				<label>
