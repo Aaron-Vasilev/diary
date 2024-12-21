@@ -3,7 +3,7 @@ package components
 import "github.com/aaron-vasilev/diary/src/model"
 
 func url(q model.Question) string {
-	return "/note?question_id=" + intToStr(q.Id) + "&created_date=" + q.ShownDate
+	return Url("/note?question_id=" + intToStr(q.Id) + "&created_date=" + q.ShownDate)
 }
 
 templ CreateNote(q model.Question) {
