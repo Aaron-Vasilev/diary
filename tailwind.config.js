@@ -12,9 +12,10 @@ module.exports = {
         Lilita: "'Lilita One'",
       },
       colors: {
-        primary: '#a8f5ff',
-        secondary: '#d5a4ed',
-        tri: '#ffb2e6'
+        primary: '#F6EFBD',
+        secondary: '#BC7C7C',
+        tri: '#E4C087',
+        four: '#A2D2DF',
       },
     },
   },

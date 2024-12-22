@@ -18,5 +18,5 @@ func Url(path string) string {
 		return baseUrl + path
 	} else {
 		return baseUrl + "/" + path
-	} 
+	}
 }

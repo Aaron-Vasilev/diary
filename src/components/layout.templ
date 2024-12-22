@@ -17,11 +17,7 @@ templ Layout(isLogin, showNav bool) {
 
     header h1 {
       text-align: center;
-      background-image: linear-gradient(to bottom right, #8161ff, #752d58);
-      background-clip: text;
       flex-grow: 1;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
     }
 
     header h1:only-child {
@@ -61,39 +57,39 @@ templ Layout(isLogin, showNav bool) {
 			<link rel="stylesheet" type="text/css" href={ utils.PublicUrl("styles/global.css") }/>
 			<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0ndXRmLTgnPz4KPG5zMDpzdmcgeG1sbnM6aHRtbD0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94aHRtbCIgeG1sbnM6bnMwPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjYwMCIgaGVpZ2h0PSI2MDAiIHZpZXdCb3g9IjAgMCA2MDAgNjAwIj4gICAgPG5zMDpmb3JlaWduT2JqZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIHg9IjAiIHk9IjAiIGV4dGVybmFsUmVzb3VyY2VzUmVxdWlyZWQ9InRydWUiPiAgICAgICAgPGh0bWw6ZGl2IHN0eWxlPSJ3aWR0aDogNjAwcHg7IGhlaWdodDogNjAwcHg7IGRpc3BsYXk6IGZsZXg7IGFsaWduLWl0ZW1zOiBjZW50ZXI7IGp1c3RpZnktY29udGVudDogY2VudGVyOyBiYWNrZ3JvdW5kOiBsaW5lYXItZ3JhZGllbnQoOTBkZWcsIHJnYigxMTcsIDQ1LCA4OCkgMCUsIHJnYigxMjksIDk3LCAyNTUpIDEwMCUpOyBib3JkZXItcmFkaXVzOiA0MnB4OyI+ICAgICAgICAgICAgPG5zMDpzdmcgd2lkdGg9IjQ2MiIgaGVpZ2h0PSI0NjIiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2IoMjU1LCAyNTUsIDI1NSkiIHN0cm9rZS13aWR0aD0iMS4zMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4gICAgICAgICAgICAgICAgPG5zMDpwYXRoIGQ9Ik04IDIxaDEyYTIgMiAwIDAgMCAyLTJ2LTJIMTB2MmEyIDIgMCAxIDEtNCAwVjVhMiAyIDAgMSAwLTQgMHYzaDQiIC8+ICAgICAgICAgICAgICAgIDxuczA6cGF0aCBkPSJNMTkgMTdWNWEyIDIgMCAwIDAtMi0ySDQiIC8+ICAgICAgICAgICAgICAgIDxuczA6cGF0aCBkPSJNMTUgOGgtNSIgLz4gICAgICAgICAgICAgICAgPG5zMDpwYXRoIGQ9Ik0xNSAxMmgtNSIgLz4gICAgICAgICAgICA8L25zMDpzdmc+ICAgICAgICA8L2h0bWw6ZGl2PiAgICA8L25zMDpmb3JlaWduT2JqZWN0PjwvbnMwOnN2Zz4="/>
 		</head>
-		<body>
+		<body class="bg-four">
 			<header
-				class="py-3 px-4 mx-auto items-center flex h-fit bg-primary font-Lilita shadow-xl border-2 border-black"
+				class="mx-auto flex h-fit items-center border-2 border-black bg-primary px-4 py-3 font-Lilita shadow-xl"
 			>
-				<h1 class="red text-5xl">
+				<h1 class="text-5xl text-four">
 					<a href={ templ.SafeURL(homeLink()) }>
 						One Day One Question
 					</a>
 				</h1>
-				<nav class="flex flex-col gap-3 justify-end md:flex-row md:ml-[-95px] ml-0">
+				<nav class="ml-0 flex flex-col justify-end gap-3 md:ml-[-95px] md:flex-row">
 					if showNav {
 						if isLogin {
 							<a
-								class="underline leading-8"
+								class="leading-8 underline"
 								href="/diary"
 							>
 								Diary
 							</a>
 							<a
-								class="underline leading-8"
+								class="leading-8 underline"
 								href="/question-list"
 							>
 								List
 							</a>
 							<a
-								class="underline leading-8"
+								class="leading-8 underline"
 								href="/login?logout=true"
 							>
 								Logout
 							</a>
 						} else {
 							<a
-								class="underline leading-8"
+								class="leading-8 underline"
 								href="/login"
 							>
 								Login
@@ -103,7 +99,7 @@ templ Layout(isLogin, showNav bool) {
 				</nav>
 			</header>
 			<main
-        id="main"
+				id="main"
 				class="p-6 selection:bg-secondary selection:text-white"
 			>
 				{ children... }

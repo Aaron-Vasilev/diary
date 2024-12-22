@@ -8,6 +8,7 @@ dev:
 format:
 	@gofmt -w .
 	@templ fmt .
+	@./tailwind_class_order.sh
 start:
 	@supervisord -c ./supervisord.conf
 launch:
