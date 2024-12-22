@@ -3,7 +3,7 @@ module github.com/aaron-vasilev/diary
 go 1.21.6
 
 require (
-	github.com/a-h/templ v0.2.598
+	github.com/a-h/templ v0.2.793
 	github.com/akrylysov/algnhsa v1.1.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/gorilla/sessions v1.2.2
@@ -12,6 +12,7 @@ require (
 	github.com/labstack/echo/v4 v4.11.4
 	github.com/lib/pq v1.10.9
 	github.com/markbates/goth v1.79.0
+	golang.org/x/crypto v0.29.0
 )
 
 require (
@@ -27,8 +28,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
-	golang.org/x/crypto v0.29.0 // indirect
-	golang.org/x/net v0.21.0 // indirect
+	golang.org/x/net v0.28.0 // indirect
 	golang.org/x/oauth2 v0.17.0 // indirect
 	golang.org/x/sys v0.27.0 // indirect
 	golang.org/x/text v0.20.0 // indirect

@@ -120,7 +120,7 @@ func (h HandlerCtx) Login(ctx echo.Context) error {
 	token, err := auth.EncodeJWT(user)
 
 	if err != nil {
-		return nil
+		return ctx.NoContent(http.StatusUnauthorized)
 	}
 
 	cookie := new(http.Cookie)
