@@ -11,8 +11,8 @@ format:
 start:
 	@supervisord -c ./supervisord.conf
 launch:
-	@go build -o ./tmp/main ./src/main.go
 	@templ generate
+	@go build -o ./tmp/main ./src/main.go
 	@echo Build ends
 	@sudo supervisorctl restart diary
 	@echo Started

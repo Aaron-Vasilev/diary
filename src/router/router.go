@@ -41,18 +41,18 @@ func ConnectRoutes(app *echo.Echo, db *sql.DB) {
 		questionId, err := strconv.Atoi(questionIdStr)
 
 		if err != nil {
-			return nil
+			return c.NoContent(http.StatusNotAcceptable)
 		}
 
 		userClaims, err := auth.GetUserClaimsFromCtx(c)
 
-		if err == nil && noteText != "" {
+		if err == nil && noteText != "" && date != "" {
 			n := controller.CreateNote(db, userClaims.Id, questionId, date, noteText)
 
 			return components.Note(n).Render(c.Request().Context(), c.Response())
 		}
 
-		return nil
+		return c.NoContent(http.StatusNotAcceptable)
 	})
 
 	app.GET("/note/:id", func(c echo.Context) error {
