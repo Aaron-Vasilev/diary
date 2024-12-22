@@ -25,7 +25,7 @@ document.addEventListener('htmx:beforeSend', function(event) {
   const path = event.detail.requestConfig.path
   const method = event.detail.requestConfig.verb
 
-  if (path.includes('/note') && method === 'post') {
+  if (path.includes('/note?') && method === 'post') {
     event.detail.requestConfig.parameters['createdDate'] = todayDateStr()
   }
 })
