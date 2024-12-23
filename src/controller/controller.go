@@ -117,11 +117,11 @@ func GetQuestions(db *sql.DB) []model.Question {
 	return questions
 }
 
-func GetQuestionsLike(db *sql.DB, search string) []model.Question {
+func GetQuestionsLike(db *sql.DB, userId int, search string) []model.Question {
 	var questions []model.Question
-	query := `SELECT * FROM diary.question q WHERE q.text ILIKE $1 ORDER BY shown_date ASC;`
+	query := `SELECT * FROM diary.question q WHERE user_id=$1 q.text ILIKE $2 ORDER BY shown_date ASC;`
 
-	rows, err := db.Query(query, "%"+search+"%")
+	rows, err := db.Query(query, userId, "%"+search+"%")
 
 	if err == nil {
 		for rows.Next() {
@@ -228,4 +228,28 @@ func CreateNote(db *sql.DB, userId, questionId int, createdDate, text string) mo
 
 func DeleteNote(db *sql.DB, id int) {
 	db.Exec("DELETE FROM diary.note WHERE id=$1", id)
+}
+
+func GetNotesByText(db *sql.DB, userId int, search string) ([]model.Note, error) {
+	var notes []model.Note
+	query := `SELECT * FROM diary.note WHERE user_id=$1 AND text ILIKE $2;`
+
+	rows, err := db.Query(query, userId, "%"+search+"%")
+
+	if err != nil {
+		return notes, err
+	}
+
+	for rows.Next() {
+		var n model.Note
+
+		rows.Scan(&n.Id, &n.UserId, &n.Text, &n.CreatedDate, &n.QuestionId)
+
+		n.CreatedDate = strings.Split(n.CreatedDate, "T")[0]
+
+		notes = append(notes, n)
+	}
+	defer rows.Close()
+
+	return notes, nil
 }

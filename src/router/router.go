@@ -138,7 +138,19 @@ func ConnectRoutes(app *echo.Echo, db *sql.DB) {
 	app.POST("/question-search", func(c echo.Context) error {
 		search := c.FormValue("search")
 
-		questions := controller.GetQuestionsLike(db, search)
+		userClaims, err := auth.GetUserClaimsFromCtx(c)
+
+		if err != nil {
+			return c.Redirect(http.StatusUnauthorized, "/login")
+		}
+
+		user, err := controller.GetUserByEmail(db, userClaims.Email)
+
+		if err != nil {
+			return c.Redirect(http.StatusUnauthorized, "/login")
+		}
+
+		questions := controller.GetQuestionsLike(db, user.Id, search)
 
 		return components.QuestionList(questions).Render(c.Request().Context(), c.Response())
 	})

@@ -92,7 +92,7 @@ templ actions(id int, text string) {
       padding: 0.25rem;
     }
   </style>
-	<div class="flex gap-2 w-[66px]">
+	<div class="mr-2 flex w-[66px] gap-2">
 		<img
 			class="cursor-pointer"
 			hx-put={ actionsUrl(id) }
@@ -110,10 +110,10 @@ templ actions(id int, text string) {
 	</div>
 	<dialog
 		id={ "dialog-" + intToStr(id) }
-		class="p-6 min-h-[30vh] min-w-[50vw] backdrop:bg-neutral-200 backdrop:opacity-75 shadow-xl"
+		class="min-h-[30vh] min-w-[50vw] p-6 shadow-xl backdrop:bg-neutral-200 backdrop:opacity-75"
 	>
 		<div class="grid gap-4">
-			<h2 class="font-Lilita text-2xl text-center">
+			<h2 class="text-center font-Lilita text-2xl">
 				Do I really want to delete the note?
 			</h2>
 			<p>
@@ -134,7 +134,7 @@ templ actions(id int, text string) {
 }
 
 templ editActions(id int) {
-	<div class="flex gap-2">
+	<div class="flex gap-2 pr-4">
 		<img
 			class="cursor-pointer"
 			hx-put={ actionsUrl(id) }

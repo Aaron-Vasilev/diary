@@ -14,6 +14,7 @@ start:
 launch:
 	@templ generate
 	@go build -o ./tmp/main ./src/main.go
+	@npx tailwindcss -o ./public/styles/out.css
 	@echo Build ends
 	@sudo supervisorctl restart diary
 	@echo Started

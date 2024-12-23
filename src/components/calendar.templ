@@ -3,7 +3,6 @@ package components
 templ Calendar(path, target, date string) {
 	<style type="text/css">
     input[type="date"] {
-      color: white;
       padding: 0.5rem 0.5rem;
     }
 
@@ -32,10 +31,10 @@ templ Calendar(path, target, date string) {
     }
   </style>
 	<div
-		class="justify-self-start md:justify-self-end md:col-start-2 flex md:flex-row-reverse"
+		class="flex justify-self-start md:col-start-2 md:flex-row-reverse md:justify-self-end"
 	>
 		<input
-			class="bg-secondary border-2 border-black shadow-xl font-Lilita text-3xl outline-primary cursor-pointer"
+			class="cursor-pointer border-2 border-black bg-primary font-Lilita text-3xl shadow-xl outline-primary"
 			type="date"
 			name="date"
 			id="calendar"
@@ -49,7 +48,7 @@ templ Calendar(path, target, date string) {
 				class="mb-auto"
 			>
 				<button
-					class="w-[42px] h-[23px] bg-secondary shadow-m border-black border-2 grid place-items-center"
+					class="grid h-[23px] w-[42px] place-items-center border-2 border-black bg-primary shadow-m"
 					type="submit"
 					onclick="setDaysToCalendar(1)"
 					hx-post={ path }
@@ -63,7 +62,7 @@ templ Calendar(path, target, date string) {
 			</div>
 			<div>
 				<button
-					class="w-[42px] h-[23px] bg-secondary shadow-m border-black border-2 grid place-items-center"
+					class="grid h-[23px] w-[42px] place-items-center border-2 border-black bg-primary shadow-m"
 					type="submit"
 					onclick="setDaysToCalendar(-1)"
 					hx-post={ path }

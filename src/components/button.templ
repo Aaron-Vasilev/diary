@@ -29,7 +29,7 @@ func typeClass(t btnType) string {
 	var class string
 
 	if t == PRIMARY {
-		class = "bg-secondary"
+		class = "bg-tri"
 	} else {
 		class = "bg-tri"
 	}
@@ -42,7 +42,7 @@ templ Button(onclick templ.ComponentScript, label string, size sizeType, btnType
 		onclick={ onclick }
 		class={ sizeClass(size),
       typeClass(btnType),
-      "px-2 border-2 border-black font-Lilita text-white shadow-m outline-primary" }
+      "px-2 border-2 border-black font-Lilita shadow-m outline-primary" }
 	>
 		{ label }
 	</button>
