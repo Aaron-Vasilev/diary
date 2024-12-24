@@ -1,0 +1,25 @@
+package pages
+
+import (
+	"github.com/aaron-vasilev/diary/src/components"
+	"github.com/aaron-vasilev/diary/src/model"
+	"github.com/aaron-vasilev/diary/src/utils"
+)
+
+templ NoteList(notes []model.Note) {
+	@components.Layout(true, true) {
+		<div class="mb-6">
+			@components.Input("/note-search", "search", "#notes", "Find a notes...")
+		</div>
+		<div class="md:col-span-2">
+			<div id="notes">
+				@NoteHistory(notes)
+			</div>
+		</div>
+	}
+}
+
+templ NoteHistory(notes []model.Note) {
+	<h3 class="mb-4 text-xl underline underline-offset-4">Found { utils.Int(len(notes)) } notes:</h3>
+	@components.NoteList(notes)
+}

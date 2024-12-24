@@ -20,23 +20,9 @@ func elementText(id int) string {
 }
 
 templ NoteList(notes []model.Note) {
-	<div class="md:col-span-2">
-		<h3 class="mb-4 text-xl underline underline-offset-4">Note History:</h3>
-		<div
-			class="grid gap-4"
-			id="note-list"
-		>
-			if len(notes) == 0 {
-				<h2 class="px-4 text-xl" id="note-list-placeholder">
-					You don&apos;t have any notes... Yet 🐣
-				</h2>
-			} else {
-				for _, note := range notes {
-					@Note(note)
-				}
-			}
-		</div>
-	</div>
+	for _, note := range notes {
+		@Note(note)
+	}
 }
 
 templ noteSkeleton(note model.Note, editable string) {

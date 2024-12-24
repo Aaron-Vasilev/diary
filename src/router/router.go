@@ -12,6 +12,7 @@ import (
 	"github.com/aaron-vasilev/diary/src/controller"
 	"github.com/aaron-vasilev/diary/src/handler"
 	"github.com/aaron-vasilev/diary/src/model"
+	"github.com/aaron-vasilev/diary/src/pages"
 	"github.com/labstack/echo/v4"
 )
 
@@ -19,6 +20,7 @@ func ConnectRoutes(app *echo.Echo, db *sql.DB) {
 	// Pages
 	app.GET("/", handler.HandlerCtx{Db: db}.Home)
 	app.GET("/question-list", handler.HandlerCtx{Db: db}.QuestionListHandler)
+	app.GET("/note-list", handler.HandlerCtx{Db: db}.NoteListHandler)
 	app.GET("/diary", handler.HandlerCtx{Db: db}.Diary)
 	app.GET("/login", handler.HandlerCtx{Db: db}.LoginPage)
 	app.GET("/update-question", handler.HandlerCtx{Db: db}.UpdateQuestion)
@@ -138,19 +140,18 @@ func ConnectRoutes(app *echo.Echo, db *sql.DB) {
 	app.POST("/question-search", func(c echo.Context) error {
 		search := c.FormValue("search")
 
-		userClaims, err := auth.GetUserClaimsFromCtx(c)
+		_, err := auth.GetUserClaimsFromCtx(c)
 
 		if err != nil {
 			return c.Redirect(http.StatusUnauthorized, "/login")
 		}
 
-		user, err := controller.GetUserByEmail(db, userClaims.Email)
+		questions, err := controller.GetQuestionsLike(db, search)
 
 		if err != nil {
-			return c.Redirect(http.StatusUnauthorized, "/login")
+			fmt.Println("✡️  line 151 err", err)
+			c.String(http.StatusBadRequest, err.Error())
 		}
-
-		questions := controller.GetQuestionsLike(db, user.Id, search)
 
 		return components.QuestionList(questions).Render(c.Request().Context(), c.Response())
 	})
@@ -193,4 +194,21 @@ func ConnectRoutes(app *echo.Echo, db *sql.DB) {
 		return components.RandomQuestion(question).Render(c.Request().Context(), c.Response())
 	})
 
+	app.POST("/note-search", func(c echo.Context) error {
+		var notes []model.Note
+		search := c.FormValue("search")
+		user, err := auth.GetUserClaimsFromCtx(c)
+
+		if err != nil {
+			return c.Redirect(http.StatusUnauthorized, "/login")
+		} else if len(search) > 1 {
+			notes, err = controller.GetNotesByText(db, user.Id, search)
+
+			if err != nil {
+				return c.String(http.StatusInternalServerError, err.Error())
+			}
+		}
+
+		return pages.NoteHistory(notes).Render(c.Request().Context(), c.Response())
+	})
 }

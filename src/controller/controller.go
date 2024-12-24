@@ -93,52 +93,64 @@ func CreateUser(db *sql.DB, email, password, name string) (model.User, error) {
 	return u, err
 }
 
-func GetQuestions(db *sql.DB) []model.Question {
+func GetQuestions(db *sql.DB) ([]model.Question, error) {
 	var questions []model.Question
 	query := `SELECT * FROM diary.question ORDER BY shown_date ASC;`
 
 	rows, err := db.Query(query)
 
-	if err == nil {
-		for rows.Next() {
-			var q model.Question
-			var dateString string
+	if err != nil {
+		return questions, err
+	}
 
-			rows.Scan(&q.Id, &q.Text, &dateString)
+	for rows.Next() {
+		var q model.Question
+		var dateString string
 
-			dateWithoutTime := strings.Split(dateString, "T")
-			q.ShownDate = dateWithoutTime[0]
+		err = rows.Scan(&q.Id, &q.Text, &dateString)
 
-			questions = append(questions, q)
+		if err != nil {
+			return questions, err
 		}
+
+		dateWithoutTime := strings.Split(dateString, "T")
+		q.ShownDate = dateWithoutTime[0]
+
+		questions = append(questions, q)
 	}
 	defer rows.Close()
 
-	return questions
+	return questions, nil
 }
 
-func GetQuestionsLike(db *sql.DB, userId int, search string) []model.Question {
+func GetQuestionsLike(db *sql.DB, search string) ([]model.Question, error) {
 	var questions []model.Question
-	query := `SELECT * FROM diary.question q WHERE user_id=$1 q.text ILIKE $2 ORDER BY shown_date ASC;`
+	query := `SELECT * FROM diary.question WHERE text ILIKE $1 ORDER BY shown_date ASC;`
 
-	rows, err := db.Query(query, userId, "%"+search+"%")
+	rows, err := db.Query(query, "%"+search+"%")
 
-	if err == nil {
-		for rows.Next() {
-			var q model.Question
-			var dateString string
+	if err != nil {
+		return questions, err
+	}
 
-			rows.Scan(&q.Id, &q.Text, &dateString)
+	for rows.Next() {
+		var q model.Question
+		var dateString string
 
-			dateWithoutTime := strings.Split(dateString, "T")
-			q.ShownDate = dateWithoutTime[0]
+		err = rows.Scan(&q.Id, &q.Text, &dateString)
 
-			questions = append(questions, q)
+		if err != nil {
+			return questions, err
 		}
+
+		dateWithoutTime := strings.Split(dateString, "T")
+		q.ShownDate = dateWithoutTime[0]
+
+		questions = append(questions, q)
 	}
 	defer rows.Close()
 
-	return questions
+	return questions, nil
 }
 
 func UpdateQuestion(db *sql.DB, id int, text string) model.Question {

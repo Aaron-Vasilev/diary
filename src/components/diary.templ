@@ -11,6 +11,20 @@ type DiaryProps struct {
 templ Diary(props DiaryProps) {
 	@Calendar("/change-date", "#diary", props.Question.ShownDate)
 	@Question(props.Question, props.User)
-	@NoteList(props.Notes)
+	<div class="md:col-span-2">
+		<h3 class="mb-4 text-xl underline underline-offset-4">Note History:</h3>
+		<div
+			class="grid gap-4"
+			id="note-list"
+		>
+			if len(props.Notes) == 0 {
+				<h2 class="px-4 text-xl" id="note-list-placeholder">
+					You don&apos;t have any notes... Yet 🐣
+				</h2>
+			} else {
+				@NoteList(props.Notes)
+			}
+		</div>
+	</div>
 	@CreateNote(props.Question)
 }

@@ -69,31 +69,12 @@ templ Layout(isLogin, showNav bool) {
 				<nav class="ml-0 flex flex-col justify-end gap-3 md:ml-[-95px] md:flex-row">
 					if showNav {
 						if isLogin {
-							<a
-								class="leading-8 underline"
-								href="/diary"
-							>
-								Diary
-							</a>
-							<a
-								class="leading-8 underline"
-								href="/question-list"
-							>
-								List
-							</a>
-							<a
-								class="leading-8 underline"
-								href="/login?logout=true"
-							>
-								Logout
-							</a>
+							@link("/diary", "Diary")
+							@link("/note-list", "Notes")
+							@link("/question-list", "Questions")
+							@link("/login?logout=true", "Logout")
 						} else {
-							<a
-								class="leading-8 underline"
-								href="/login"
-							>
-								Login
-							</a>
+							@link("/login", "Login")
 						}
 					}
 				</nav>
@@ -106,4 +87,13 @@ templ Layout(isLogin, showNav bool) {
 			</main>
 		</body>
 	</html>
+}
+
+templ link(href, label string) {
+	<a
+		class="leading-8 underline"
+		href={ templ.SafeURL(Url(href)) }
+	>
+		{ label }
+	</a>
 }

@@ -9,7 +9,7 @@ import (
 templ QuestionList(questions []model.Question) {
 	@components.Layout(true, true) {
 		<div class="mb-6">
-			@components.Input("search", "#question-list", "Find a question...")
+			@components.Input("/question-search", "search", "#question-list", "Find a question...")
 		</div>
 		<h2 class="mb-1 text-xl underline underline-offset-4">
 			Questions List:
@@ -29,7 +29,7 @@ func dateWithoutYear(dateStr string) string {
 }
 
 templ question(q model.Question) {
-	<li class="text-lg border-b-2 border-black border-solid mb-2 p-1">
+	<li class="mb-2 border-b-2 border-solid border-black p-1 text-lg">
 		<h3 class="underline decoration-dashed underline-offset-4">
 			<span class="mr-1">
 				Date: 

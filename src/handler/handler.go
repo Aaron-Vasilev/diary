@@ -35,15 +35,31 @@ func (h HandlerCtx) Home(c echo.Context) error {
 }
 
 func (h HandlerCtx) QuestionListHandler(c echo.Context) error {
-	questions := controller.GetQuestions(h.Db)
-
 	_, err := auth.GetUserClaimsFromCtx(c)
 
 	if err != nil {
-		return c.Redirect(http.StatusFound, "/login")
+		return c.Redirect(http.StatusUnauthorized, "/login")
+	}
+
+	questions, err := controller.GetQuestions(h.Db)
+
+	if err != nil {
+		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
 	return pages.QuestionList(questions).Render(c.Request().Context(), c.Response())
+}
+
+func (h HandlerCtx) NoteListHandler(c echo.Context) error {
+	_, err := auth.GetUserClaimsFromCtx(c)
+
+	if err != nil {
+		return c.Redirect(http.StatusUnauthorized, "/login")
+	}
+
+	var notes []model.Note
+
+	return pages.NoteList(notes).Render(c.Request().Context(), c.Response())
 }
 
 func (h HandlerCtx) Diary(c echo.Context) error {
