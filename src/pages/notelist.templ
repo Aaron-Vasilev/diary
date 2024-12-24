@@ -9,7 +9,7 @@ import (
 templ NoteList(notes []model.Note) {
 	@components.Layout(true, true) {
 		<div class="mb-6">
-			@components.Input("/note-search", "search", "#notes", "Find a notes...")
+			@components.Input(components.Url("/note-search"), "search", "#notes", "Find a notes...")
 		</div>
 		<div class="md:col-span-2">
 			<div id="notes">
