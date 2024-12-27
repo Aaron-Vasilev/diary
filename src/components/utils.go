@@ -6,17 +6,19 @@ import (
 )
 
 func Url(path string) string {
-	baseUrl := os.Getenv("BASE_URL")
+	url := os.Getenv("BASE_URL")
 
-	if strings.HasSuffix(baseUrl, "/") {
+	if strings.HasSuffix(url, "/") {
 		if strings.HasPrefix(path, "/") {
-			return baseUrl + path[1:]
+			url += path[1:]
 		} else {
-			return baseUrl + path
+			url += path
 		}
 	} else if strings.HasPrefix(path, "/") {
-		return baseUrl + path
+		url += path
 	} else {
-		return baseUrl + "/" + path
+		url += "/" + path
 	}
+
+	return url
 }

@@ -3,7 +3,7 @@ package pages
 import (
 	"github.com/aaron-vasilev/diary/src/components"
 	"github.com/aaron-vasilev/diary/src/model"
-	"github.com/aaron-vasilev/diary/src/utils"
+	"strconv"
 )
 
 type UpdateQuestionProps struct {
@@ -19,7 +19,7 @@ templ UpdateQuestion(props UpdateQuestionProps) {
 		</div>
 		<form
 			class="mt-8"
-			hx-put={ "/update-question?id=" + utils.Int(props.Question.Id) }
+			hx-put={ components.Url("/update-question?id=" + strconv.Itoa(props.Question.Id)) }
 			hx-swap="outerHTML"
 			hx-target="#question"
 		>

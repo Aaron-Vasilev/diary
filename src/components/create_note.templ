@@ -2,15 +2,11 @@ package components
 
 import "github.com/aaron-vasilev/diary/src/model"
 
-func url(q model.Question) string {
-	return Url("/note?question_id=" + intToStr(q.Id) + "&created_date=" + q.ShownDate)
-}
-
 templ CreateNote(q model.Question) {
 	<form
 		class="col-[1_/_-1] grid items-center gap-4"
 		id="create-note"
-		hx-post={ url(q) }
+		hx-post={ Url("/note?question_id=" + intToStr(q.Id) + "&created_date=" + q.ShownDate) }
 		hx-target="#note-list"
 		hx-swap="beforeend"
 	>
