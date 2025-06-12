@@ -45,7 +45,7 @@ function debounce(func, delay = 300) {
   }
 }
 
-const debouncedSaveLocalStorate = debounce(saveLocally)
+const debouncedSaveLocalStorate = debounce((value) => saveLocally(NOTE, value))
 
 function setDaysToCalendar(dif) {
   const calendar = document.getElementById('calendar')
