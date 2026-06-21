@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"database/sql"
+	"io"
 	"net/http"
 	"strconv"
 	"time"
@@ -11,17 +11,16 @@ import (
 	"github.com/aaron-vasilev/diary/src/controller"
 	"github.com/aaron-vasilev/diary/src/model"
 	"github.com/aaron-vasilev/diary/src/pages"
+	"github.com/aaron-vasilev/diary/src/telegram"
 	"github.com/aaron-vasilev/diary/src/utils"
 	"github.com/labstack/echo/v4"
 	"github.com/markbates/goth/gothic"
 )
 
-type HandlerCtx struct {
-	Db *sql.DB
-}
+type HandlerCtx struct{}
 
 func (h HandlerCtx) Home(c echo.Context) error {
-	question := controller.GetQuestionByDate(h.Db, "2023-08-05")
+	question := controller.GetQuestionByDate("2023-08-05")
 
 	_, err := auth.GetUserClaimsFromCtx(c)
 
@@ -41,7 +40,7 @@ func (h HandlerCtx) QuestionListHandler(c echo.Context) error {
 		return c.Redirect(http.StatusUnauthorized, "/login")
 	}
 
-	questions, err := controller.GetQuestions(h.Db)
+	questions, err := controller.GetQuestions()
 
 	if err != nil {
 		return c.String(http.StatusInternalServerError, err.Error())
@@ -84,9 +83,9 @@ func (h HandlerCtx) Diary(c echo.Context) error {
 		return c.Redirect(http.StatusFound, "/login")
 	}
 
-	question = controller.GetQuestionByDate(h.Db, question.ShownDate)
-	user, err = controller.GetUserByEmail(h.Db, userClaims.Email)
-	notes = controller.GetNotes(h.Db, user.Id, question.Id)
+	question = controller.GetQuestionByDate(question.ShownDate)
+	user, err = controller.GetUserByEmail(userClaims.Email)
+	notes = controller.GetNotes(user.Id, question.Id)
 
 	return pages.Diary(components.DiaryProps{
 		User:     user,
@@ -117,7 +116,7 @@ func (h HandlerCtx) Login(ctx echo.Context) error {
 	email := ctx.FormValue("email")
 	password := ctx.FormValue("password")
 
-	user, err := controller.GetUserByEmail(h.Db, email)
+	user, err := controller.GetUserByEmail(email)
 
 	if err != nil {
 		return err
@@ -153,7 +152,7 @@ func (h HandlerCtx) Register(ctx echo.Context) error {
 	password := ctx.FormValue("password")
 	name := ctx.FormValue("name")
 
-	_, err := controller.CreateUser(h.Db, email, password, name)
+	_, err := controller.CreateUser(email, password, name)
 
 	if err != nil {
 		return nil
@@ -173,7 +172,7 @@ func (h HandlerCtx) AuthCallback(c echo.Context) error {
 		return c.Redirect(http.StatusFound, "/login")
 	}
 
-	user, err := controller.GetUserByEmail(h.Db, googleUser.Email)
+	user, err := controller.GetUserByEmail(googleUser.Email)
 	token, err := auth.EncodeJWT(user)
 
 	if err != nil {
@@ -205,7 +204,7 @@ func (h HandlerCtx) UpdateQuestion(c echo.Context) error {
 		question.ShownDate = shownDate
 	}
 
-	question = controller.GetQuestionByDate(h.Db, question.ShownDate)
+	question = controller.GetQuestionByDate(question.ShownDate)
 
 	return pages.UpdateQuestion(pages.UpdateQuestionProps{
 		Question: question,
@@ -214,4 +213,39 @@ func (h HandlerCtx) UpdateQuestion(c echo.Context) error {
 			Name: "Aaron",
 		},
 	}).Render(c.Request().Context(), c.Response())
+}
+
+func (h HandlerCtx) TelegramLogin(c echo.Context) error {
+	body, err := io.ReadAll(c.Request().Body)
+	if err != nil {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
+	tgUser, err := telegram.ParseInitData(string(body))
+	if err != nil {
+		return c.NoContent(http.StatusUnauthorized)
+	}
+
+	name := tgUser.FirstName
+	if tgUser.LastName != "" {
+		name += " " + tgUser.LastName
+	}
+
+	user, err := controller.UpsertTelegramUser(tgUser.ID, name)
+	if err != nil {
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	token, err := auth.EncodeJWT(user)
+	if err != nil {
+		return c.NoContent(http.StatusInternalServerError)
+	}
+
+	cookie := new(http.Cookie)
+	cookie.Name = utils.TOKEN
+	cookie.Value = token
+	cookie.Path = "/"
+	c.SetCookie(cookie)
+
+	return c.Redirect(http.StatusFound, "/diary")
 }

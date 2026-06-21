@@ -4,6 +4,24 @@ import "github.com/aaron-vasilev/diary/src/components"
 
 templ Login() {
 	@components.Layout(false, false) {
+		<script>
+      if (window.Telegram?.WebApp) {
+        const tg = window.Telegram.WebApp
+
+        tg.ready()
+        tg.expand()
+        tg.disableVerticalSwipes()
+
+        if (tg.initData) {
+          fetch("/login/telegram", {
+            method: "POST",
+            body: tg.initData,
+          }).catch(function(e) {
+            console.error("telegram login error:", e)
+          })
+        }
+      }
+		</script>
 		<div class="flex justify-center">
 			<form
 				action={ templ.SafeURL(components.Url("/auth/login")) }

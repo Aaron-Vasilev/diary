@@ -16,6 +16,7 @@ type User struct {
 	SubId      *string
 	Subscribed bool
 	Password   *string
+	TelegramId *int64
 }
 
 type Question struct {

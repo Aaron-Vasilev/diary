@@ -1,267 +1,239 @@
 package controller
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
 	"strings"
+	"time"
 
+	"github.com/aaron-vasilev/diary/src/db"
 	"github.com/aaron-vasilev/diary/src/model"
 	"github.com/aaron-vasilev/diary/src/utils"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
-func GetQuestion(db *sql.DB, id int) model.Question {
-	var q model.Question
-
-	query := `SELECT * FROM diary.question q WHERE q.id=$1;`
-
-	db.QueryRow(query, id).Scan(&q.Id, &q.Text, &q.ShownDate)
-
-	return q
+func GetQuestion(id int) model.Question {
+	q, err := db.Query.GetQuestion(context.Background(), int32(id))
+	if err != nil {
+		return model.Question{}
+	}
+	return questionToModel(q)
 }
 
-func GetQuestionByDate(db *sql.DB, date string) model.Question {
-	var q model.Question
-	q.ShownDate = date
-
+func GetQuestionByDate(date string) model.Question {
+	q := model.Question{ShownDate: date}
 	if !utils.DateStrIsValid(date) {
 		return q
 	}
-
-	query := `SELECT id, text FROM diary.question q WHERE q.shown_date=$1;`
-	splitedDate := strings.Split(date, "-")
-	querDate := "2024-" + splitedDate[1] + "-" + splitedDate[2]
-
-	row := db.QueryRow(query, querDate).Scan(&q.Id, &q.Text)
-
-	if row == sql.ErrNoRows {
-		fmt.Println("No question with that date")
+	parts := strings.Split(date, "-")
+	queryDate := "2024-" + parts[1] + "-" + parts[2]
+	t, err := time.Parse("2006-01-02", queryDate)
+	if err != nil {
+		return q
 	}
-
+	result, err := db.Query.GetQuestionByDate(context.Background(), pgtype.Date{Time: t, Valid: true})
+	if err != nil {
+		return q
+	}
+	q.Id = int(result.ID)
+	q.Text = result.Text
 	return q
 }
 
-func GetUserById(db *sql.DB, id int) model.User {
-	var u model.User
-	query := `SELECT * FROM diary.user u WHERE u.id=$1;`
-	row := db.QueryRow(query, id).Scan(
-		&u.Id,
-		&u.CreatedAt,
-		&u.Email,
-		&u.Name,
-		&u.Role,
-		&u.SubId,
-		&u.Subscribed,
-		&u.Password,
-	)
-
-	if row == sql.ErrNoRows {
-		fmt.Println("No question with that id")
-	}
-
-	return u
-}
-
-func GetUserByEmail(db *sql.DB, email string) (model.User, error) {
-	var u model.User
-	query := `SELECT * FROM diary.user u WHERE u.email=$1;`
-	err := db.QueryRow(query, email).Scan(
-		&u.Id,
-		&u.CreatedAt,
-		&u.Email,
-		&u.Name,
-		&u.Role,
-		&u.SubId,
-		&u.Subscribed,
-		&u.Password,
-	)
-
-	return u, err
-}
-
-func CreateUser(db *sql.DB, email, password, name string) (model.User, error) {
-	var u model.User
-	query := `INSERT INTO diary.user (email, password, name) VALUES($1, $2, $3) RETURNING *;`
-
-	err := db.QueryRow(query, email).Scan(
-		&u.Id,
-		&u.CreatedAt,
-		&u.Email,
-		&u.Name,
-		&u.Role,
-		&u.SubId,
-		&u.Subscribed)
-	return u, err
-}
-
-func GetQuestions(db *sql.DB) ([]model.Question, error) {
-	var questions []model.Question
-	query := `SELECT * FROM diary.question ORDER BY shown_date ASC;`
-
-	rows, err := db.Query(query)
-
+func GetUserById(id int) model.User {
+	u, err := db.Query.GetUserById(context.Background(), int32(id))
 	if err != nil {
-		return questions, err
+		return model.User{}
 	}
+	return userToModel(u)
+}
 
-	for rows.Next() {
-		var q model.Question
-		var dateString string
-
-		err = rows.Scan(&q.Id, &q.Text, &dateString)
-
-		if err != nil {
-			return questions, err
-		}
-
-		dateWithoutTime := strings.Split(dateString, "T")
-		q.ShownDate = dateWithoutTime[0]
-
-		questions = append(questions, q)
+func GetUserByEmail(email string) (model.User, error) {
+	u, err := db.Query.GetUserByEmail(context.Background(), email)
+	if err != nil {
+		return model.User{}, err
 	}
-	defer rows.Close()
+	return userToModel(u), nil
+}
 
+func CreateUser(email, password, name string) (model.User, error) {
+	u, err := db.Query.CreateUser(context.Background(), db.CreateUserParams{
+		Email:    email,
+		Password: pgtype.Text{String: password, Valid: true},
+		Name:     name,
+	})
+	if err != nil {
+		return model.User{}, err
+	}
+	return userToModel(u), nil
+}
+
+func GetQuestions() ([]model.Question, error) {
+	rows, err := db.Query.GetQuestions(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	questions := make([]model.Question, len(rows))
+	for i, q := range rows {
+		questions[i] = questionToModel(q)
+	}
 	return questions, nil
 }
 
-func GetQuestionsLike(db *sql.DB, search string) ([]model.Question, error) {
-	var questions []model.Question
-	query := `SELECT * FROM diary.question WHERE text ILIKE $1 ORDER BY shown_date ASC;`
-
-	rows, err := db.Query(query, "%"+search+"%")
-
+func GetQuestionsLike(search string) ([]model.Question, error) {
+	rows, err := db.Query.GetQuestionsLike(context.Background(), "%"+search+"%")
 	if err != nil {
-		return questions, err
+		return nil, err
 	}
-
-	for rows.Next() {
-		var q model.Question
-		var dateString string
-
-		err = rows.Scan(&q.Id, &q.Text, &dateString)
-
-		if err != nil {
-			return questions, err
-		}
-
-		dateWithoutTime := strings.Split(dateString, "T")
-		q.ShownDate = dateWithoutTime[0]
-
-		questions = append(questions, q)
+	questions := make([]model.Question, len(rows))
+	for i, q := range rows {
+		questions[i] = questionToModel(q)
 	}
-	defer rows.Close()
-
 	return questions, nil
 }
 
-func UpdateQuestion(db *sql.DB, id int, text string) model.Question {
-	var q model.Question
-	query := `UPDATE diary.question SET text=$1 WHERE id=$2 RETURNING *;`
-
-	db.QueryRow(query, text, id).Scan(
-		&q.Id,
-		&q.Text,
-		&q.ShownDate,
-	)
-
-	q.ShownDate = utils.BeautyDate(q.ShownDate)
-
-	return q
-}
-
-func GetNoteById(db *sql.DB, id int) model.Note {
-	var n model.Note
-	query := `SELECT * FROM diary.note WHERE id=$1`
-
-	db.QueryRow(query, id).Scan(
-		&n.Id,
-		&n.UserId,
-		&n.Text,
-		&n.CreatedDate,
-		&n.QuestionId,
-	)
-
-	n.CreatedDate = strings.Split(n.CreatedDate, "T")[0]
-
-	return n
-}
-
-func UpdateNote(db *sql.DB, id int, text string) model.Note {
-	var n model.Note
-	query := `UPDATE diary.note SET text=$1 WHERE id=$2 RETURNING *;`
-
-	db.QueryRow(query, text, id).Scan(
-		&n.Id,
-		&n.UserId,
-		&n.Text,
-		&n.CreatedDate,
-		&n.QuestionId,
-	)
-
-	n.CreatedDate = utils.BeautyDate(n.CreatedDate)
-
-	return n
-}
-
-func GetNotes(db *sql.DB, userId, questionId int) []model.Note {
-	var notes []model.Note
-	query := `SELECT * FROM diary.note WHERE user_id=$1 AND question_id=$2 ORDER BY id ASC;`
-
-	rows, err := db.Query(query, userId, questionId)
-
-	if err == nil {
-		for rows.Next() {
-			var n model.Note
-
-			rows.Scan(&n.Id, &n.UserId, &n.Text, &n.CreatedDate, &n.QuestionId)
-
-			n.CreatedDate = strings.Split(n.CreatedDate, "T")[0]
-
-			notes = append(notes, n)
-		}
+func UpdateQuestion(id int, text string) model.Question {
+	q, err := db.Query.UpdateQuestion(context.Background(), db.UpdateQuestionParams{
+		Text: text,
+		ID:   int32(id),
+	})
+	if err != nil {
+		return model.Question{}
 	}
-	defer rows.Close()
+	return questionToModel(q)
+}
 
+func GetNoteById(id int) model.Note {
+	n, err := db.Query.GetNoteById(context.Background(), int32(id))
+	if err != nil {
+		return model.Note{}
+	}
+	return noteToModel(n)
+}
+
+func UpdateNote(id int, text string) model.Note {
+	n, err := db.Query.UpdateNote(context.Background(), db.UpdateNoteParams{
+		Text: text,
+		ID:   int32(id),
+	})
+	if err != nil {
+		return model.Note{}
+	}
+	return noteToModel(n)
+}
+
+func GetNotes(userId, questionId int) []model.Note {
+	rows, err := db.Query.GetNotes(context.Background(), db.GetNotesParams{
+		UserID:     userId,
+		QuestionID: pgtype.Int4{Int32: int32(questionId), Valid: true},
+	})
+	if err != nil {
+		return nil
+	}
+	notes := make([]model.Note, len(rows))
+	for i, n := range rows {
+		notes[i] = noteToModel(n)
+	}
 	return notes
 }
 
-func CreateNote(db *sql.DB, userId, questionId int, createdDate, text string) model.Note {
-	note := model.Note{
-		UserId:      userId,
-		QuestionId:  questionId,
-		Text:        text,
-		CreatedDate: createdDate,
-	}
-	query := "INSERT INTO diary.note (user_id, text, created_date, question_id) VALUES ($1, $2, $3, $4) returning id;"
-
-	db.QueryRow(query, userId, text, createdDate, questionId).Scan(&note.Id)
-
-	return note
-}
-
-func DeleteNote(db *sql.DB, id int) {
-	db.Exec("DELETE FROM diary.note WHERE id=$1", id)
-}
-
-func GetNotesByText(db *sql.DB, userId int, search string) ([]model.Note, error) {
-	var notes []model.Note
-	query := `SELECT * FROM diary.note WHERE user_id=$1 AND text ILIKE $2;`
-
-	rows, err := db.Query(query, userId, "%"+search+"%")
-
+func CreateNote(userId, questionId int, createdDate, text string) model.Note {
+	t, err := time.Parse("2006-01-02", createdDate)
 	if err != nil {
-		return notes, err
+		return model.Note{UserId: userId, QuestionId: questionId, Text: text, CreatedDate: createdDate}
 	}
-
-	for rows.Next() {
-		var n model.Note
-
-		rows.Scan(&n.Id, &n.UserId, &n.Text, &n.CreatedDate, &n.QuestionId)
-
-		n.CreatedDate = strings.Split(n.CreatedDate, "T")[0]
-
-		notes = append(notes, n)
+	n, err := db.Query.CreateNote(context.Background(), db.CreateNoteParams{
+		UserID:      userId,
+		Text:        text,
+		CreatedDate: t,
+		QuestionID:  pgtype.Int4{Int32: int32(questionId), Valid: true},
+	})
+	if err != nil {
+		return model.Note{UserId: userId, QuestionId: questionId, Text: text, CreatedDate: createdDate}
 	}
-	defer rows.Close()
+	return noteToModel(n)
+}
 
+func DeleteNote(id int) {
+	db.Query.DeleteNote(context.Background(), int32(id))
+}
+
+func GetNotesByText(userId int, search string) ([]model.Note, error) {
+	rows, err := db.Query.GetNotesByText(context.Background(), db.GetNotesByTextParams{
+		UserID: userId,
+		Text:   "%" + search + "%",
+	})
+	if err != nil {
+		return nil, err
+	}
+	notes := make([]model.Note, len(rows))
+	for i, n := range rows {
+		notes[i] = noteToModel(n)
+	}
 	return notes, nil
+}
+
+func questionToModel(q db.DiaryQuestion) model.Question {
+	shownDate := ""
+	if q.ShownDate.Valid {
+		shownDate = q.ShownDate.Time.Format("2006-01-02")
+	}
+	return model.Question{
+		Id:        int(q.ID),
+		Text:      q.Text,
+		ShownDate: shownDate,
+	}
+}
+
+func noteToModel(n db.DiaryNote) model.Note {
+	qid := 0
+	if n.QuestionID.Valid {
+		qid = int(n.QuestionID.Int32)
+	}
+	return model.Note{
+		Id:          int(n.ID),
+		UserId:      n.UserID,
+		QuestionId:  qid,
+		Text:        n.Text,
+		CreatedDate: n.CreatedDate.Format("2006-01-02"),
+	}
+}
+
+func userToModel(u db.DiaryUser) model.User {
+	var subId *string
+	if u.SubID.Valid {
+		subId = &u.SubID.String
+	}
+	var password *string
+	if u.Password.Valid {
+		password = &u.Password.String
+	}
+	var telegramId *int64
+	if u.TelegramID.Valid {
+		telegramId = &u.TelegramID.Int64
+	}
+	return model.User{
+		Id:         int(u.ID),
+		CreatedAt:  u.CreatedAt.Format(time.RFC3339),
+		Email:      u.Email,
+		Name:       u.Name,
+		Role:       model.Role(u.Role),
+		SubId:      subId,
+		Subscribed: u.Subscribed,
+		Password:   password,
+		TelegramId: telegramId,
+	}
+}
+
+func UpsertTelegramUser(telegramId int64, name string) (model.User, error) {
+	email := fmt.Sprintf("telegram_%d@telegram.placeholder", telegramId)
+	u, err := db.Query.UpsertTelegramUser(context.Background(), db.UpsertTelegramUserParams{
+		Email:      email,
+		Name:       name,
+		TelegramID: pgtype.Int8{Int64: telegramId, Valid: true},
+	})
+	if err != nil {
+		return model.User{}, err
+	}
+	return userToModel(u), nil
 }

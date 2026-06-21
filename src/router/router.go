@@ -1,7 +1,6 @@
 package router
 
 import (
-	"database/sql"
 	"fmt"
 	"math/rand/v2"
 	"net/http"
@@ -16,17 +15,24 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func ConnectRoutes(app *echo.Echo, db *sql.DB) {
-	// Pages
-	app.GET("/", handler.HandlerCtx{Db: db}.Home)
-	app.GET("/question-list", handler.HandlerCtx{Db: db}.QuestionListHandler)
-	app.GET("/note-list", handler.HandlerCtx{Db: db}.NoteListHandler)
-	app.GET("/diary", handler.HandlerCtx{Db: db}.Diary)
-	app.GET("/login", handler.HandlerCtx{Db: db}.LoginPage)
-	app.GET("/update-question", handler.HandlerCtx{Db: db}.UpdateQuestion)
+func ConnectRoutes(app *echo.Echo) {
+	h := handler.HandlerCtx{}
 
-	app.GET("/auth/login", handler.HandlerCtx{Db: db}.Login)
-	app.GET("/auth/callback", handler.HandlerCtx{Db: db}.AuthCallback) // for Google
+	// Pages
+	app.GET("/", h.Home)
+	app.GET("/question-list", h.QuestionListHandler)
+	app.GET("/note-list", h.NoteListHandler)
+	app.GET("/diary", h.Diary)
+	app.GET("/login", h.LoginPage)
+	app.GET("/update-question", h.UpdateQuestion)
+
+	app.GET("/auth/login", h.Login)
+	app.GET("/auth/callback", h.AuthCallback)
+	app.POST("/login/telegram", func(c echo.Context) error {
+		fmt.Println("✡️  line 24 test")
+		return c.String(http.StatusOK, "test")
+	})
+
 	app.GET("/test", func(c echo.Context) error {
 		fmt.Println("✡️  line 24 test")
 		return c.String(http.StatusOK, "test")
@@ -49,7 +55,7 @@ func ConnectRoutes(app *echo.Echo, db *sql.DB) {
 		userClaims, err := auth.GetUserClaimsFromCtx(c)
 
 		if err == nil && noteText != "" && date != "" {
-			n := controller.CreateNote(db, userClaims.Id, questionId, date, noteText)
+			n := controller.CreateNote(userClaims.Id, questionId, date, noteText)
 
 			return components.Note(n).Render(c.Request().Context(), c.Response())
 		}
@@ -65,7 +71,7 @@ func ConnectRoutes(app *echo.Echo, db *sql.DB) {
 		}
 
 		id, _ := strconv.Atoi(c.Param("id"))
-		n := controller.GetNoteById(db, id)
+		n := controller.GetNoteById(id)
 
 		return components.Note(n).Render(c.Request().Context(), c.Response())
 	})
@@ -87,11 +93,11 @@ func ConnectRoutes(app *echo.Echo, db *sql.DB) {
 		changedText := c.Request().FormValue("text")
 
 		if changedText == "" {
-			n = controller.GetNoteById(db, id)
+			n = controller.GetNoteById(id)
 
 			return components.EditNote(n).Render(c.Request().Context(), c.Response())
 		} else {
-			n = controller.UpdateNote(db, id, changedText)
+			n = controller.UpdateNote(id, changedText)
 
 			return components.Note(n).Render(c.Request().Context(), c.Response())
 		}
@@ -110,13 +116,13 @@ func ConnectRoutes(app *echo.Echo, db *sql.DB) {
 			return c.NoContent(http.StatusNotAcceptable)
 		}
 
-		controller.DeleteNote(db, id)
+		controller.DeleteNote(id)
 
 		return c.NoContent(http.StatusOK)
 	})
 
 	app.POST("/change-date", func(c echo.Context) error {
-		question := controller.GetQuestionByDate(db, c.FormValue("date"))
+		question := controller.GetQuestionByDate(c.FormValue("date"))
 		var notes []model.Note
 		user := model.User{
 			Name: "Anon",
@@ -126,8 +132,8 @@ func ConnectRoutes(app *echo.Echo, db *sql.DB) {
 		userClaims, err := auth.GetUserClaimsFromCtx(c)
 
 		if err == nil {
-			user, err = controller.GetUserByEmail(db, userClaims.Email)
-			notes = controller.GetNotes(db, user.Id, question.Id)
+			user, err = controller.GetUserByEmail(userClaims.Email)
+			notes = controller.GetNotes(user.Id, question.Id)
 		}
 
 		return components.Diary(components.DiaryProps{
@@ -146,7 +152,7 @@ func ConnectRoutes(app *echo.Echo, db *sql.DB) {
 			return c.Redirect(http.StatusUnauthorized, "/login")
 		}
 
-		questions, err := controller.GetQuestionsLike(db, search)
+		questions, err := controller.GetQuestionsLike(search)
 
 		if err != nil {
 			fmt.Println("✡️  line 151 err", err)
@@ -157,7 +163,7 @@ func ConnectRoutes(app *echo.Echo, db *sql.DB) {
 	})
 
 	app.POST("/update-question", func(c echo.Context) error {
-		question := controller.GetQuestionByDate(db, c.FormValue("date"))
+		question := controller.GetQuestionByDate(c.FormValue("date"))
 		user := model.User{
 			Name: "Aaron",
 			Id:   1,
@@ -177,7 +183,7 @@ func ConnectRoutes(app *echo.Echo, db *sql.DB) {
 		questionIdStr := c.QueryParam("id")
 		id, _ := strconv.Atoi(questionIdStr)
 
-		question := controller.UpdateQuestion(db, id, newQuestion)
+		question := controller.UpdateQuestion(id, newQuestion)
 		user := model.User{
 			Name: "Aaron",
 			Id:   1,
@@ -187,9 +193,7 @@ func ConnectRoutes(app *echo.Echo, db *sql.DB) {
 	})
 
 	app.GET("/random-question", func(c echo.Context) error {
-		var question model.Question
-
-		question = controller.GetQuestion(db, rand.IntN(360-1)+1)
+		question := controller.GetQuestion(rand.IntN(360-1) + 1)
 
 		return components.RandomQuestion(question).Render(c.Request().Context(), c.Response())
 	})
@@ -202,7 +206,7 @@ func ConnectRoutes(app *echo.Echo, db *sql.DB) {
 		if err != nil {
 			return c.Redirect(http.StatusUnauthorized, "/login")
 		} else if len(search) > 1 {
-			notes, err = controller.GetNotesByText(db, user.Id, search)
+			notes, err = controller.GetNotesByText(user.Id, search)
 
 			if err != nil {
 				return c.String(http.StatusInternalServerError, err.Error())
