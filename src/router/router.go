@@ -2,6 +2,7 @@ package router
 
 import (
 	"fmt"
+	"log"
 	"math/rand/v2"
 	"net/http"
 	"strconv"
@@ -49,6 +50,7 @@ func ConnectRoutes(app *echo.Echo) {
 		questionId, err := strconv.Atoi(questionIdStr)
 
 		if err != nil {
+			log.Printf("POST /note: bad question_id %q: %v", questionIdStr, err)
 			return c.NoContent(http.StatusNotAcceptable)
 		}
 
@@ -67,10 +69,15 @@ func ConnectRoutes(app *echo.Echo) {
 		_, err := auth.GetUserClaimsFromCtx(c)
 
 		if err != nil {
+			log.Printf("GET /note/:id: unauthorized: %v", err)
 			return c.NoContent(http.StatusUnauthorized)
 		}
 
-		id, _ := strconv.Atoi(c.Param("id"))
+		id, err := strconv.Atoi(c.Param("id"))
+		if err != nil {
+			log.Printf("GET /note/:id: bad id %q: %v", c.Param("id"), err)
+			return c.NoContent(http.StatusNotAcceptable)
+		}
 		n := controller.GetNoteById(id)
 
 		return components.Note(n).Render(c.Request().Context(), c.Response())
@@ -81,12 +88,14 @@ func ConnectRoutes(app *echo.Echo) {
 		_, err := auth.GetUserClaimsFromCtx(c)
 
 		if err != nil {
+			log.Printf("PUT /note/:id: unauthorized: %v", err)
 			return c.NoContent(http.StatusUnauthorized)
 		}
 
 		id, err := strconv.Atoi(c.Param("id"))
 
 		if err != nil {
+			log.Printf("PUT /note/:id: bad id %q: %v", c.Param("id"), err)
 			return c.NoContent(http.StatusNotAcceptable)
 		}
 
@@ -107,12 +116,14 @@ func ConnectRoutes(app *echo.Echo) {
 		_, err := auth.GetUserClaimsFromCtx(c)
 
 		if err != nil {
+			log.Printf("DELETE /note/:id: unauthorized: %v", err)
 			return c.NoContent(http.StatusUnauthorized)
 		}
 
 		id, err := strconv.Atoi(c.Param("id"))
 
 		if err != nil {
+			log.Printf("DELETE /note/:id: bad id %q: %v", c.Param("id"), err)
 			return c.NoContent(http.StatusNotAcceptable)
 		}
 
@@ -149,14 +160,15 @@ func ConnectRoutes(app *echo.Echo) {
 		_, err := auth.GetUserClaimsFromCtx(c)
 
 		if err != nil {
+			log.Printf("POST /question-search: unauthorized: %v", err)
 			return c.Redirect(http.StatusUnauthorized, "/login")
 		}
 
 		questions, err := controller.GetQuestionsLike(search)
 
 		if err != nil {
-			fmt.Println("✡️  line 151 err", err)
-			c.String(http.StatusBadRequest, err.Error())
+			log.Printf("POST /question-search: GetQuestionsLike(%q) failed: %v", search, err)
+			return c.String(http.StatusBadRequest, err.Error())
 		}
 
 		return components.QuestionList(questions).Render(c.Request().Context(), c.Response())
@@ -176,12 +188,17 @@ func ConnectRoutes(app *echo.Echo) {
 		_, err := auth.GetUserClaimsFromCtx(c)
 
 		if err != nil {
+			log.Printf("PUT /update-question: unauthorized: %v", err)
 			return c.NoContent(http.StatusUnauthorized)
 		}
 
 		newQuestion := c.FormValue("question")
 		questionIdStr := c.QueryParam("id")
-		id, _ := strconv.Atoi(questionIdStr)
+		id, err := strconv.Atoi(questionIdStr)
+		if err != nil {
+			log.Printf("PUT /update-question: bad id %q: %v", questionIdStr, err)
+			return c.NoContent(http.StatusNotAcceptable)
+		}
 
 		question := controller.UpdateQuestion(id, newQuestion)
 		user := model.User{
@@ -204,11 +221,13 @@ func ConnectRoutes(app *echo.Echo) {
 		user, err := auth.GetUserClaimsFromCtx(c)
 
 		if err != nil {
+			log.Printf("POST /note-search: unauthorized: %v", err)
 			return c.Redirect(http.StatusUnauthorized, "/login")
 		} else if len(search) > 1 {
 			notes, err = controller.GetNotesByText(user.Id, search)
 
 			if err != nil {
+				log.Printf("POST /note-search: GetNotesByText(%d, %q) failed: %v", user.Id, search, err)
 				return c.String(http.StatusInternalServerError, err.Error())
 			}
 		}

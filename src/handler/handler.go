@@ -2,6 +2,7 @@ package handler
 
 import (
 	"io"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -43,6 +44,7 @@ func (h HandlerCtx) QuestionListHandler(c echo.Context) error {
 	questions, err := controller.GetQuestions()
 
 	if err != nil {
+		log.Printf("QuestionListHandler: GetQuestions failed: %v", err)
 		return c.String(http.StatusInternalServerError, err.Error())
 	}
 
@@ -119,22 +121,26 @@ func (h HandlerCtx) Login(ctx echo.Context) error {
 	user, err := controller.GetUserByEmail(email)
 
 	if err != nil {
-		return err
+		log.Printf("Login: GetUserByEmail(%q) failed: %v", email, err)
+		return ctx.Redirect(http.StatusFound, "/login")
 	}
 
 	if user.Password == nil {
-		return nil
+		log.Printf("Login: user %q has no password set", email)
+		return ctx.Redirect(http.StatusFound, "/login")
 	}
 
 	isValidPassword := auth.CheckPassword(password, *user.Password)
 
 	if !isValidPassword {
-		return nil
+		log.Printf("Login: bad password for %q", email)
+		return ctx.Redirect(http.StatusFound, "/login")
 	}
 
 	token, err := auth.EncodeJWT(user)
 
 	if err != nil {
+		log.Printf("Login: EncodeJWT for %q failed: %v", email, err)
 		return ctx.NoContent(http.StatusUnauthorized)
 	}
 
@@ -155,7 +161,8 @@ func (h HandlerCtx) Register(ctx echo.Context) error {
 	_, err := controller.CreateUser(email, password, name)
 
 	if err != nil {
-		return nil
+		log.Printf("Register: CreateUser(%q) failed: %v", email, err)
+		return ctx.Redirect(http.StatusFound, "/login")
 	}
 
 	return ctx.Redirect(http.StatusFound, "/diary")
@@ -169,13 +176,21 @@ func (h HandlerCtx) AuthCallback(c echo.Context) error {
 	googleUser, err := gothic.CompleteUserAuth(c.Response().Writer, c.Request())
 
 	if err != nil {
+		log.Printf("AuthCallback: CompleteUserAuth failed: %v", err)
 		return c.Redirect(http.StatusFound, "/login")
 	}
 
 	user, err := controller.GetUserByEmail(googleUser.Email)
+
+	if err != nil {
+		log.Printf("AuthCallback: GetUserByEmail(%q) failed: %v", googleUser.Email, err)
+		return c.Redirect(http.StatusFound, "/login")
+	}
+
 	token, err := auth.EncodeJWT(user)
 
 	if err != nil {
+		log.Printf("AuthCallback: EncodeJWT for %q failed: %v", googleUser.Email, err)
 		return c.Redirect(http.StatusFound, "/login")
 	}
 
@@ -218,11 +233,13 @@ func (h HandlerCtx) UpdateQuestion(c echo.Context) error {
 func (h HandlerCtx) TelegramLogin(c echo.Context) error {
 	body, err := io.ReadAll(c.Request().Body)
 	if err != nil {
+		log.Printf("TelegramLogin: read body failed: %v", err)
 		return c.NoContent(http.StatusBadRequest)
 	}
 
 	tgUser, err := telegram.ParseInitData(string(body))
 	if err != nil {
+		log.Printf("TelegramLogin: ParseInitData failed: %v", err)
 		return c.NoContent(http.StatusUnauthorized)
 	}
 
@@ -233,11 +250,13 @@ func (h HandlerCtx) TelegramLogin(c echo.Context) error {
 
 	user, err := controller.UpsertTelegramUser(tgUser.ID, name)
 	if err != nil {
+		log.Printf("TelegramLogin: UpsertTelegramUser(%d, %q) failed: %v", tgUser.ID, name, err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
 	token, err := auth.EncodeJWT(user)
 	if err != nil {
+		log.Printf("TelegramLogin: EncodeJWT for tg user %d failed: %v", tgUser.ID, err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
