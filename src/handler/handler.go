@@ -101,7 +101,7 @@ func (h HandlerCtx) LoginPage(c echo.Context) error {
 	logout, err := strconv.ParseBool(logoutStr)
 
 	if err == nil && logout {
-		utils.DeleteCookie(c, utils.TOKEN)
+		auth.ClearAuthCookies(c)
 		return c.Redirect(http.StatusFound, "/login")
 	}
 
@@ -137,18 +137,10 @@ func (h HandlerCtx) Login(ctx echo.Context) error {
 		return ctx.Redirect(http.StatusFound, "/login")
 	}
 
-	token, err := auth.EncodeJWT(user)
-
-	if err != nil {
-		log.Printf("Login: EncodeJWT for %q failed: %v", email, err)
+	if err := auth.SetAuthCookies(ctx, user); err != nil {
+		log.Printf("Login: SetAuthCookies for %q failed: %v", email, err)
 		return ctx.NoContent(http.StatusUnauthorized)
 	}
-
-	cookie := new(http.Cookie)
-	cookie.Name = utils.TOKEN
-	cookie.Value = token
-	cookie.Path = "/"
-	ctx.SetCookie(cookie)
 
 	return ctx.Redirect(http.StatusFound, "/diary")
 }
@@ -187,18 +179,10 @@ func (h HandlerCtx) AuthCallback(c echo.Context) error {
 		return c.Redirect(http.StatusFound, "/login")
 	}
 
-	token, err := auth.EncodeJWT(user)
-
-	if err != nil {
-		log.Printf("AuthCallback: EncodeJWT for %q failed: %v", googleUser.Email, err)
+	if err := auth.SetAuthCookies(c, user); err != nil {
+		log.Printf("AuthCallback: SetAuthCookies for %q failed: %v", googleUser.Email, err)
 		return c.Redirect(http.StatusFound, "/login")
 	}
-
-	cookie := new(http.Cookie)
-	cookie.Name = utils.TOKEN
-	cookie.Value = token
-	cookie.Path = "/"
-	c.SetCookie(cookie)
 
 	return c.Redirect(http.StatusFound, "/diary")
 }
@@ -254,17 +238,10 @@ func (h HandlerCtx) TelegramLogin(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	token, err := auth.EncodeJWT(user)
-	if err != nil {
-		log.Printf("TelegramLogin: EncodeJWT for tg user %d failed: %v", tgUser.ID, err)
+	if err := auth.SetAuthCookies(c, user); err != nil {
+		log.Printf("TelegramLogin: SetAuthCookies for tg user %d failed: %v", tgUser.ID, err)
 		return c.NoContent(http.StatusInternalServerError)
 	}
-
-	cookie := new(http.Cookie)
-	cookie.Name = utils.TOKEN
-	cookie.Value = token
-	cookie.Path = "/"
-	c.SetCookie(cookie)
 
 	return c.Redirect(http.StatusFound, "/diary")
 }

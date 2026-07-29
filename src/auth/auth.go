@@ -1,9 +1,12 @@
 package auth
 
 import (
+	"errors"
+	"net/http"
 	"os"
 	"time"
 
+	"github.com/aaron-vasilev/diary/src/controller"
 	"github.com/aaron-vasilev/diary/src/model"
 	"github.com/aaron-vasilev/diary/src/utils"
 	"github.com/golang-jwt/jwt"
@@ -14,6 +17,11 @@ import (
 
 	"github.com/markbates/goth/gothic"
 	"github.com/markbates/goth/providers/google"
+)
+
+const (
+	accessTTL  = 15 * time.Minute
+	refreshTTL = 3 * 24 * time.Hour
 )
 
 func NewAuth() {
@@ -37,14 +45,17 @@ type UserClaims struct {
 	jwt.StandardClaims
 }
 
-func newAccessToken(claims UserClaims) (string, error) {
-	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	return accessToken.SignedString([]byte(os.Getenv("JWT_SECRET")))
+type RefreshClaims struct {
+	Id int `json:"id"`
+	jwt.StandardClaims
 }
 
-func EncodeJWT(u model.User) (string, error) {
-	userClaims := UserClaims{
+func jwtSecret() []byte {
+	return []byte(os.Getenv("JWT_SECRET"))
+}
+
+func EncodeAccess(u model.User) (string, error) {
+	claims := UserClaims{
 		Id:         u.Id,
 		Email:      u.Email,
 		Name:       u.Name,
@@ -52,47 +63,126 @@ func EncodeJWT(u model.User) (string, error) {
 		Subscribed: u.Subscribed,
 		StandardClaims: jwt.StandardClaims{
 			IssuedAt:  time.Now().Unix(),
-			ExpiresAt: time.Now().Add(time.Hour * 24 * 30).Unix(),
+			ExpiresAt: time.Now().Add(accessTTL).Unix(),
 		},
 	}
-
-	token, err := newAccessToken(userClaims)
-
-	return token, err
+	return jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(jwtSecret())
 }
 
-func DecodeJWT(accessToken string) (*UserClaims, error) {
-	parsedAccessToken, err := jwt.ParseWithClaims(accessToken, &UserClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(os.Getenv("JWT_SECRET")), nil
-	})
+func EncodeRefresh(u model.User) (string, error) {
+	claims := RefreshClaims{
+		Id: u.Id,
+		StandardClaims: jwt.StandardClaims{
+			IssuedAt:  time.Now().Unix(),
+			ExpiresAt: time.Now().Add(refreshTTL).Unix(),
+		},
+	}
+	return jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(jwtSecret())
+}
 
-	return parsedAccessToken.Claims.(*UserClaims), err
+func DecodeAccess(token string) (*UserClaims, error) {
+	parsed, err := jwt.ParseWithClaims(token, &UserClaims{}, func(t *jwt.Token) (any, error) {
+		return jwtSecret(), nil
+	})
+	if err != nil || parsed == nil {
+		return nil, err
+	}
+	claims, ok := parsed.Claims.(*UserClaims)
+	if !ok || !parsed.Valid {
+		return nil, errors.New("invalid access token")
+	}
+	return claims, nil
+}
+
+func DecodeRefresh(token string) (*RefreshClaims, error) {
+	parsed, err := jwt.ParseWithClaims(token, &RefreshClaims{}, func(t *jwt.Token) (any, error) {
+		return jwtSecret(), nil
+	})
+	if err != nil || parsed == nil {
+		return nil, err
+	}
+	claims, ok := parsed.Claims.(*RefreshClaims)
+	if !ok || !parsed.Valid {
+		return nil, errors.New("invalid refresh token")
+	}
+	return claims, nil
+}
+
+func setAuthCookie(c echo.Context, name, value string, ttl time.Duration) {
+	cookie := new(http.Cookie)
+	cookie.Name = name
+	cookie.Value = value
+	cookie.Path = "/"
+	cookie.Expires = time.Now().Add(ttl)
+	cookie.MaxAge = int(ttl.Seconds())
+	cookie.HttpOnly = true
+	cookie.SameSite = http.SameSiteLaxMode
+	cookie.Secure = utils.IsProd()
+	c.SetCookie(cookie)
+}
+
+func SetAuthCookies(c echo.Context, u model.User) error {
+	access, err := EncodeAccess(u)
+	if err != nil {
+		return err
+	}
+	refresh, err := EncodeRefresh(u)
+	if err != nil {
+		return err
+	}
+	setAuthCookie(c, utils.TOKEN, access, accessTTL)
+	setAuthCookie(c, utils.REFRESH_TOKEN, refresh, refreshTTL)
+	return nil
+}
+
+func ClearAuthCookies(c echo.Context) {
+	utils.DeleteCookie(c, utils.TOKEN)
+	utils.DeleteCookie(c, utils.REFRESH_TOKEN)
 }
 
 func GetUserClaimsFromCtx(c echo.Context) (*UserClaims, error) {
-	cookies, err := c.Cookie(utils.TOKEN)
+	if accessCookie, err := c.Cookie(utils.TOKEN); err == nil {
+		if claims, err := DecodeAccess(accessCookie.Value); err == nil {
+			return claims, nil
+		}
+	}
 
+	refreshCookie, err := c.Cookie(utils.REFRESH_TOKEN)
 	if err != nil {
+		ClearAuthCookies(c)
 		return nil, err
 	}
 
-	token := cookies.Value
-	userClaim, err := DecodeJWT(token)
-
+	refreshClaims, err := DecodeRefresh(refreshCookie.Value)
 	if err != nil {
-		utils.DeleteCookie(c, utils.TOKEN)
+		ClearAuthCookies(c)
+		return nil, err
 	}
 
-	return userClaim, nil
+	user := controller.GetUserById(refreshClaims.Id)
+	if user.Id == 0 {
+		ClearAuthCookies(c)
+		return nil, errors.New("user not found")
+	}
+
+	if err := SetAuthCookies(c, user); err != nil {
+		return nil, err
+	}
+
+	return &UserClaims{
+		Id:         user.Id,
+		Email:      user.Email,
+		Name:       user.Name,
+		Role:       user.Role,
+		Subscribed: user.Subscribed,
+	}, nil
 }
 
 func HashPassword(password string) (string, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-
 	if err != nil {
 		return "", err
 	}
-
 	return string(hash), nil
 }
 

@@ -10,7 +10,8 @@ import (
 )
 
 const (
-	TOKEN string = "token"
+	TOKEN         string = "token"
+	REFRESH_TOKEN string = "refresh_token"
 )
 
 func DateStrIsValid(dateStr string) bool {
