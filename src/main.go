@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"os"
@@ -22,8 +21,8 @@ func main() {
 	PORT := os.Getenv("PORT")
 	app := echo.New()
 
-	conn := db.ConnectDB()
-	defer conn.Close(context.Background())
+	pool := db.ConnectDB()
+	defer pool.Close()
 
 	auth.NewAuth()
 	app.Use(session.Middleware(sessions.NewCookieStore([]byte("secret"))))
