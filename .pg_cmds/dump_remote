@@ -1,0 +1,1 @@
+PGGSSENCMODE=disable pg_dump -h 10.0.0.9 -p 5432 -d prod -U postgres -Fc -v -f "./.pg_cmds/dump_data.sql"

@@ -3,7 +3,6 @@ package pages
 import (
 	"github.com/aaron-vasilev/diary/src/components"
 	"github.com/aaron-vasilev/diary/src/model"
-	"strconv"
 )
 
 type UpdateQuestionProps struct {
@@ -14,12 +13,15 @@ type UpdateQuestionProps struct {
 templ UpdateQuestion(props UpdateQuestionProps) {
 	@components.Layout(true, true) {
 		<div class="flex justify-between">
-			@components.Question(props.Question, props.User)
-			@components.Calendar("/update-question", "#question", props.Question.ShownDate)
+			<div id="question-container">
+				@components.Question(props.Question, props.User)
+			</div>
+			@components.Calendar("/update-question", "#question-container", props.Question.ShownDate)
 		</div>
 		<form
 			class="mt-8"
-			hx-put={ components.Url("/update-question?id=" + strconv.Itoa(props.Question.Id)) }
+			hx-put={ components.Url("/update-question") }
+			hx-vals="js:{id: document.getElementById('question').dataset.questionId}"
 			hx-swap="outerHTML"
 			hx-target="#question"
 		>

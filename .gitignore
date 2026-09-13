@@ -1,7 +1,9 @@
 .env
 *_templ.go
 tmp
+node_modules
 out.css
+input.css
 bootstrap
 *.zip
-pg_cmds
+.npmrc

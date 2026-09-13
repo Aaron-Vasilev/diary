@@ -1,0 +1,1 @@
+pg_restore -h localhost -p 55000 -U postgres -d diary --verbose "./.pg_cmds/dump_data.sql" --no-owner --disable-triggers

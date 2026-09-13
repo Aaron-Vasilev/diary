@@ -185,28 +185,29 @@ func ConnectRoutes(app *echo.Echo) {
 	})
 
 	app.PUT("/update-question", func(c echo.Context) error {
-		_, err := auth.GetUserClaimsFromCtx(c)
+		user, err := auth.GetUserClaimsFromCtx(c)
 
-		if err != nil {
+		if err != nil || user.Id != 1 {
 			log.Printf("PUT /update-question: unauthorized: %v", err)
 			return c.NoContent(http.StatusUnauthorized)
 		}
 
 		newQuestion := c.FormValue("question")
-		questionIdStr := c.QueryParam("id")
+		questionIdStr := c.FormValue("id")
 		id, err := strconv.Atoi(questionIdStr)
+
 		if err != nil {
 			log.Printf("PUT /update-question: bad id %q: %v", questionIdStr, err)
 			return c.NoContent(http.StatusNotAcceptable)
 		}
 
 		question := controller.UpdateQuestion(id, newQuestion)
-		user := model.User{
+		userUi := model.User{
 			Name: "Aaron",
 			Id:   1,
 		}
 
-		return components.Question(question, user).Render(c.Request().Context(), c.Response())
+		return components.Question(question, userUi).Render(c.Request().Context(), c.Response())
 	})
 
 	app.GET("/random-question", func(c echo.Context) error {

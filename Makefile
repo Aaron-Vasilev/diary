@@ -4,7 +4,7 @@ run:
 build:
 	@go build -o ./tmp/main ./src/main.go
 dev:
-	@npx concurrently "air" "npx tailwindcss -o ./public/styles/out.css --watch"
+	@npx concurrently "air" "npx tailwindcss -i ./public/styles/input.css -o ./public/styles/out.css --watch"
 format:
 	@gofmt -w .
 	@templ fmt .
@@ -14,7 +14,7 @@ start:
 launch:
 	@templ generate
 	@go build -o ./tmp/main ./src/main.go
-	@npx tailwindcss -o ./public/styles/out.css
+	@npx tailwindcss -i ./public/styles/input.css -o ./public/styles/out.css
 	@echo Build ends
 	@sudo supervisorctl restart diary
 	@echo Started
