@@ -24,6 +24,11 @@ img {
   display: inline;
 }
 
+/* htmx loading-states extension */
+[data-loading] {
+  display: none;
+}
+
 /* latin */
 @font-face {
   font-family: 'Inria Sans';

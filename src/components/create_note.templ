@@ -9,6 +9,8 @@ templ CreateNote(q model.Question) {
 		hx-post={ Url("/note?question_id=" + intToStr(q.Id) + "&created_date=" + q.ShownDate) }
 		hx-target="#note-list"
 		hx-swap="beforeend"
+		hx-ext="loading-states"
+		data-loading-states
 	>
 		@InputArea()
 		@Button(DummyClick(), "Add", M, PRIMARY)

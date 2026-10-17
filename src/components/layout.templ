@@ -43,6 +43,7 @@ templ Layout(isLogin, showNav bool) {
 			<meta name="twitter:image" content={ utils.PublicUrl("images/icon.png") }/>
 			<meta property="og:image" content={ utils.PublicUrl("images/icon.png") }/>
 			<script src="https://unpkg.com/htmx.org"></script>
+			<script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/loading-states.js"></script>
 			<script src={ utils.PublicUrl("index.js") }></script>
 			if utils.IsProd() {
 				<script async src="https://www.googletagmanager.com/gtag/js?id=G-KBJ379JC17"></script>

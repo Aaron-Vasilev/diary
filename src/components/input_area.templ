@@ -1,10 +1,21 @@
 package components
 
 templ InputArea() {
-	<textarea
-		id="input-area"
-		class="w-full h-fit border-8 border-solid border-primary bg-transparent p-4 shadow-xl outline-none"
-		name="note"
-		oninput="debouncedSaveLocalStorate(this.value)"
-	></textarea>
+	<div class="relative">
+		<div
+			class="absolute left-[50%] top-[50%] w-min -translate-x-1/2 -translate-y-1/2"
+			data-loading="block"
+		>
+			@Spinner()
+		</div>
+		<textarea
+			id="input-area"
+			class="h-fit w-full border-8 border-solid border-primary bg-transparent p-4 shadow-xl outline-none"
+			name="note"
+			data-loading-class="opacity-30"
+			data-loading-disable
+			data-loading-aria-busy
+			oninput="debouncedSaveLocalStorate(this.value)"
+		></textarea>
+	</div>
 }
