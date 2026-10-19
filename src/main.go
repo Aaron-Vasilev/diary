@@ -31,9 +31,10 @@ func main() {
 
 	if utils.IsProd() {
 		app.Use(middleware)
-		algnhsa.ListenAndServe(app, nil)
+		algnhsa.ListenAndServe(app, &algnhsa.Options{
+			BinaryContentTypes: []string{"image/png", "image/jpeg", "image/gif", "image/webp", "image/x-icon", "image/vnd.microsoft.icon"},
+		})
 	} else {
-		app.Static("public/", "public/")
 		fmt.Printf("Server started at localhost%s\n", PORT)
 
 		err := app.Start(PORT)

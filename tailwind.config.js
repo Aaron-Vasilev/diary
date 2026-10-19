@@ -12,12 +12,21 @@ module.exports = {
         Lilita: "'Lilita One'",
       },
       colors: {
-        primary: '#A2D2DF',
+        primary: '#74B9FF',
         secondary: '#F6EFBD',
         tri: '#E4C087',
         four: '#BC7C7C',
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function ({ addUtilities }) {
+      addUtilities({
+        '.brutal': {
+          border: '3px solid black',
+          boxShadow: '4px 4px 0 0 black',
+        },
+      })
+    },
+  ],
 }

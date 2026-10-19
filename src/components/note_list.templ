@@ -2,7 +2,6 @@ package components
 
 import (
 	"github.com/aaron-vasilev/diary/src/model"
-	"github.com/aaron-vasilev/diary/src/utils"
 	"strconv"
 )
 
@@ -28,9 +27,9 @@ templ NoteList(notes []model.Note) {
 templ noteSkeleton(note model.Note, editable string) {
 	<div
 		id={ noteId(note.Id) }
-		class="whitespace-pre-line border-8 border-solid border-primary p-2 shadow-xl"
+		class="whitespace-pre-line brutal bg-white"
 	>
-		<div class="flex justify-between">
+		<div class="flex justify-between p-2 bg-primary border-b-4 border-black">
 			<h2 class="font-Lilita text-lg underline decoration-dashed underline-offset-4">
 				<span class="mr-1 text-2xl">
 					Date:
@@ -69,7 +68,6 @@ templ actions(id int, text string) {
 	<style type="text/css">
     dialog {
       background-image: linear-gradient(to bottom right, rgba(255, 255, 232, 1), rgba(255, 178, 230, 0.3));
-      border: 2px solid black;
     }
 
     dialog p {
@@ -85,18 +83,18 @@ templ actions(id int, text string) {
 			hx-target={ "#" + noteId(id) }
 			hx-swap="outerHTML"
 			alt="edit icon"
-			src={ utils.PublicUrl("images/edit.svg") }
+			src="/public/images/edit.svg"
 		/>
 		<img
 			class="cursor-pointer"
 			alt="delete icon"
 			onclick={ openDialog(id) }
-			src={ utils.PublicUrl("images/delete.svg") }
+			src="/public/images/delete.svg"
 		/>
 	</div>
 	<dialog
 		id={ "dialog-" + intToStr(id) }
-		class="min-h-[30vh] min-w-[50vw] p-6 shadow-xl backdrop:bg-neutral-200 backdrop:opacity-75"
+		class="min-h-[30vh] min-w-[50vw] brutal p-6 backdrop:bg-neutral-200 backdrop:opacity-75"
 	>
 		<div class="grid gap-4">
 			<h2 class="text-center font-Lilita text-2xl">
@@ -128,7 +126,7 @@ templ editActions(id int) {
 			hx-swap="outerHTML"
 			hx-vals={ elementText(id) }
 			alt="accept icon"
-			src={ utils.PublicUrl("images/accept.svg") }
+			src="/public/images/accept.svg"
 		/>
 		<img
 			class="cursor-pointer"
@@ -136,7 +134,7 @@ templ editActions(id int) {
 			hx-target={ "#" + noteId(id) }
 			hx-swap="outerHTML"
 			alt="accept icon"
-			src={ utils.PublicUrl("images/decline.svg") }
+			src="/public/images/decline.svg"
 		/>
 	</div>
 }

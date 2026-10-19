@@ -38,7 +38,3 @@ func IsProd() bool {
 func BeautyDate(date string) string {
 	return strings.Split(date, "T")[0]
 }
-
-func PublicUrl(path string) string {
-	return os.Getenv("PUBLIC_URL") + path
-}

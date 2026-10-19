@@ -34,7 +34,7 @@ templ Calendar(path, target, date string) {
 		class="flex justify-self-start md:col-start-2 md:flex-row-reverse md:justify-self-end"
 	>
 		<input
-			class="cursor-pointer border-2 border-black bg-primary font-Lilita text-3xl shadow-xl outline-primary"
+			class="cursor-pointer brutal bg-primary font-Lilita text-3xl outline-primary"
 			type="date"
 			name="date"
 			id="calendar"
@@ -48,7 +48,7 @@ templ Calendar(path, target, date string) {
 				class="mb-auto"
 			>
 				<button
-					class="grid h-[23px] w-[42px] place-items-center border-2 border-black bg-primary shadow-m"
+					class="grid h-[23px] w-[42px] place-items-center brutal bg-primary"
 					type="submit"
 					onclick="setDaysToCalendar(1)"
 					hx-post={ Url(path) }
@@ -62,7 +62,7 @@ templ Calendar(path, target, date string) {
 			</div>
 			<div>
 				<button
-					class="grid h-[23px] w-[42px] place-items-center border-2 border-black bg-primary shadow-m"
+					class="grid h-[23px] w-[42px] place-items-center brutal bg-primary"
 					type="submit"
 					onclick="setDaysToCalendar(-1)"
 					hx-post={ Url(path) }

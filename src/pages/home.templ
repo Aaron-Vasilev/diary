@@ -3,7 +3,6 @@ package pages
 import (
 	"github.com/aaron-vasilev/diary/src/components"
 	"github.com/aaron-vasilev/diary/src/model"
-	"github.com/aaron-vasilev/diary/src/utils"
 )
 
 type HomeProps struct {
@@ -29,7 +28,7 @@ templ Home(props HomeProps) {
 					for range [5] int{} {
 						<img
 							alt="star"
-							src={ utils.PublicUrl("images/star.svg") }
+							src="/public/images/star.svg"
 						/>
 					}
 				</div>
@@ -48,7 +47,7 @@ templ Home(props HomeProps) {
 						<img
 							class="rounded-full w-14 h-14"
 							alt="woman's photo"
-							src={ utils.PublicUrl("images/Violetta.png") }
+							src="/public/images/Violetta.png"
 						/>
 					</div>
 					<div>
@@ -62,7 +61,7 @@ templ Home(props HomeProps) {
 								<img
 									class="size-6"
 									alt="instagram logo"
-									src={ utils.PublicUrl("images/instagram.svg") }
+									src="/public/images/instagram.svg"
 								/>
 							</a>
 						</p>

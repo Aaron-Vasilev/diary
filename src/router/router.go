@@ -38,6 +38,7 @@ func ConnectRoutes(app *echo.Echo) {
 		fmt.Println("✡️  line 24 test")
 		return c.String(http.StatusOK, "test")
 	})
+	app.GET("/public/*", h.Public)
 	app.GET("/*", func(c echo.Context) error {
 		return c.Redirect(http.StatusFound, "/")
 	})
